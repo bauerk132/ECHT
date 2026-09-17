@@ -969,9 +969,9 @@
     <div class="echt-wordmark">EcHT<span>/ Bakery Schedule</span></div>
 
     <div class="week-nav">
-      <button id="prev-week" title="Previous week">‹</button>
+      <button id="prev-week" title="Previous week" aria-label="Previous week">‹</button>
       <div id="week-label">—</div>
-      <button id="next-week" title="Next week">›</button>
+      <button id="next-week" title="Next week" aria-label="Next week">›</button>
       <button id="today-btn" class="btn" style="margin-left:4px">Today</button>
     </div>
 
@@ -997,12 +997,12 @@
       <div class="add-form" id="quick-add-form">
 
         <div class="form-row">
-          <div class="form-label">Task Name</div>
+          <label class="form-label" for="qa-name">Task Name</label>
           <input class="form-input" id="qa-name" placeholder="e.g. Laminate dough" />
         </div>
 
         <div class="form-row">
-          <div class="form-label">Category</div>
+          <label class="form-label" for="qa-category">Category</label>
           <select class="form-select" id="qa-category"></select>
         </div>
 
@@ -1013,23 +1013,23 @@
 
         <div class="time-row">
           <div class="form-row">
-            <div class="form-label">Start</div>
+            <label class="form-label" for="qa-start">Start</label>
             <input class="form-input" id="qa-start" type="time" value="06:00" />
           </div>
           <div class="form-row">
-            <div class="form-label">End</div>
+            <label class="form-label" for="qa-end">End</label>
             <input class="form-input" id="qa-end" type="time" value="07:00" />
           </div>
         </div>
 
         <div class="form-row">
-          <div class="form-label">Notes</div>
+          <label class="form-label" for="qa-notes">Notes</label>
           <textarea class="form-textarea" id="qa-notes" placeholder="Temp, hydration, notes…"></textarea>
         </div>
 
         <div class="toggle-row">
           <div>
-            <div class="toggle-label">Passive / Waiting</div>
+            <label class="toggle-label" for="qa-passive">Passive / Waiting</label>
             <div class="toggle-sub">Can overlap other tasks</div>
           </div>
           <label class="toggle-switch">
@@ -1048,12 +1048,12 @@
       <div class="add-form">
 
         <div class="form-row">
-          <div class="form-label">Item</div>
+          <label class="form-label" for="ov-name">Item</label>
           <input class="form-input" id="ov-name" placeholder="e.g. Croissants — Bake" />
         </div>
 
         <div class="form-row">
-          <div class="form-label">Category</div>
+          <label class="form-label" for="ov-category">Category</label>
           <select class="form-select" id="ov-category"></select>
         </div>
 
@@ -1064,22 +1064,22 @@
 
         <div class="time-row">
           <div class="form-row">
-            <div class="form-label">Start</div>
+            <label class="form-label" for="ov-start">Start</label>
             <input class="form-input" id="ov-start" type="time" value="06:00" />
           </div>
           <div class="form-row">
-            <div class="form-label">End</div>
+            <label class="form-label" for="ov-end">End</label>
             <input class="form-input" id="ov-end" type="time" value="07:00" />
           </div>
         </div>
 
         <div class="form-row">
-          <div class="form-label">Temp (°F)</div>
+          <label class="form-label" for="ov-temp">Temp (°F)</label>
           <input class="form-input" id="ov-temp" type="number" placeholder="375" min="200" max="600" />
         </div>
 
         <div class="form-row">
-          <div class="form-label">Notes</div>
+          <label class="form-label" for="ov-notes">Notes</label>
           <textarea class="form-textarea" id="ov-notes" placeholder="Steam, rack position…"></textarea>
         </div>
 
@@ -1473,7 +1473,7 @@ function createTaskBlockEl(task) {
 
   const dur = (task.endSlot - task.startSlot) * 15;
   el.innerHTML = `
-    <button class="block-delete" title="Remove">×</button>
+    <button class="block-delete" title="Remove" aria-label="Remove block">×</button>
     <div class="block-title">${escHtml(task.name)}</div>
     ${dur > 30 ? `<div class="block-time">${slotToTime(task.startSlot)}–${slotToTime(task.endSlot)}</div>` : ''}
     ${dur > 45 ? `<div class="block-cat">${getCatName(task.category)}</div>` : ''}
@@ -1510,7 +1510,7 @@ function renderOvenBlocks(grid) {
 
     const dur = (block.endSlot - block.startSlot) * 15;
     el.innerHTML = `
-      <button class="block-delete" title="Remove">×</button>
+      <button class="block-delete" title="Remove" aria-label="Remove block">×</button>
       ${conflictIds.has(block.id) ? `<div class="conflict-badge">⚠ CONFLICT</div>` : ''}
       <div class="block-title">${escHtml(block.name)}</div>
       ${dur > 30 ? `<div class="block-time">${slotToTime(block.startSlot)}–${slotToTime(block.endSlot)}</div>` : ''}
@@ -1788,34 +1788,34 @@ function openEditModal(task) {
   document.getElementById('modal-body').innerHTML = `
     <div class="add-form">
       <div class="form-row">
-        <div class="form-label">Task Name</div>
+        <label class="form-label" for="edit-name">Task Name</label>
         <input class="form-input" id="edit-name" value="${escHtml(task.name)}" />
       </div>
       <div class="form-row">
-        <div class="form-label">Category</div>
+        <label class="form-label" for="edit-cat">Category</label>
         <select class="form-select" id="edit-cat">${catOptions}</select>
       </div>
       <div class="form-row">
-        <div class="form-label">Day</div>
+        <label class="form-label" for="edit-day">Day</label>
         <select class="form-select" id="edit-day">${dayOptions}</select>
       </div>
       <div class="time-row">
         <div class="form-row">
-          <div class="form-label">Start</div>
+          <label class="form-label" for="edit-start">Start</label>
           <input class="form-input" id="edit-start" type="time" value="${slotToTime(task.startSlot)}" />
         </div>
         <div class="form-row">
-          <div class="form-label">End</div>
+          <label class="form-label" for="edit-end">End</label>
           <input class="form-input" id="edit-end" type="time" value="${slotToTime(task.endSlot)}" />
         </div>
       </div>
       <div class="form-row">
-        <div class="form-label">Notes</div>
+        <label class="form-label" for="edit-notes">Notes</label>
         <textarea class="form-textarea" id="edit-notes">${escHtml(task.notes || '')}</textarea>
       </div>
       <div class="toggle-row">
         <div>
-          <div class="toggle-label">Passive / Waiting</div>
+          <label class="toggle-label" for="edit-passive">Passive / Waiting</label>
           <div class="toggle-sub">Can overlap other tasks</div>
         </div>
         <label class="toggle-switch">
@@ -1872,33 +1872,33 @@ function openEditOvenModal(block) {
   document.getElementById('modal-body').innerHTML = `
     <div class="add-form">
       <div class="form-row">
-        <div class="form-label">Item</div>
+        <label class="form-label" for="edit-ov-name">Item</label>
         <input class="form-input" id="edit-ov-name" value="${escHtml(block.name)}" />
       </div>
       <div class="form-row">
-        <div class="form-label">Category</div>
+        <label class="form-label" for="edit-ov-cat">Category</label>
         <select class="form-select" id="edit-ov-cat">${catOptions}</select>
       </div>
       <div class="form-row">
-        <div class="form-label">Day</div>
+        <label class="form-label" for="edit-ov-day">Day</label>
         <select class="form-select" id="edit-ov-day">${dayOptions}</select>
       </div>
       <div class="time-row">
         <div class="form-row">
-          <div class="form-label">Start</div>
+          <label class="form-label" for="edit-ov-start">Start</label>
           <input class="form-input" id="edit-ov-start" type="time" value="${slotToTime(block.startSlot)}" />
         </div>
         <div class="form-row">
-          <div class="form-label">End</div>
+          <label class="form-label" for="edit-ov-end">End</label>
           <input class="form-input" id="edit-ov-end" type="time" value="${slotToTime(block.endSlot)}" />
         </div>
       </div>
       <div class="form-row">
-        <div class="form-label">Temp (°F)</div>
+        <label class="form-label" for="edit-ov-temp">Temp (°F)</label>
         <input class="form-input" id="edit-ov-temp" type="number" value="${block.temp || ''}" placeholder="375" />
       </div>
       <div class="form-row">
-        <div class="form-label">Notes</div>
+        <label class="form-label" for="edit-ov-notes">Notes</label>
         <textarea class="form-textarea" id="edit-ov-notes">${escHtml(block.notes || '')}</textarea>
       </div>
     </div>
