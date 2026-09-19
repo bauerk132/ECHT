@@ -1,0 +1,3 @@
+## 2026-09-19 - Focus Visibility in Native HTML Apps
+**Learning:** In vanilla HTML/CSS apps, standard browser focus indicators are often hidden or overridden when elements have strong custom styles or are styled as `display: block` inside interactive elements. Relying on default focus states is not enough for keyboard accessibility.
+**Action:** Always provide a global `:focus-visible` CSS rule to ensure keyboard users have a reliable, high-contrast visual indicator. Ensure the outline uses an existing design token like the brand's primary action color (e.g., `--echt-gold`) and offset it for better visibility.
