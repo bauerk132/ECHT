@@ -1449,15 +1449,6 @@ function renderTaskBlocks(grid) {
     grid.appendChild(el);
   });
 
-  // Click on empty cell to add
-  grid.querySelectorAll('.time-cell').forEach(cell => {
-    cell.addEventListener('click', e => {
-      if (e.target !== cell) return;
-      const slot = parseInt(cell.dataset.slot);
-      const day = parseInt(cell.dataset.day);
-      openQuickAddAtSlot(slot, day, 'task');
-    });
-  });
 }
 
 function createTaskBlockEl(task) {
@@ -1534,15 +1525,6 @@ function renderOvenBlocks(grid) {
     grid.appendChild(el);
   });
 
-  // Click on empty cell
-  grid.querySelectorAll('.time-cell').forEach(cell => {
-    cell.addEventListener('click', e => {
-      if (e.target !== cell) return;
-      const slot = parseInt(cell.dataset.slot);
-      const day = parseInt(cell.dataset.day);
-      openQuickAddAtSlot(slot, day, 'oven');
-    });
-  });
 }
 
 // ─── DRAG & DROP — TASKS ─────────────────────────────────────────────────
@@ -2362,6 +2344,24 @@ function seedData() {
 }
 
 // ─── INIT ────────────────────────────────────────────────────────────────
+function setupGridDelegation() {
+  document.getElementById('schedule-grid').addEventListener('click', e => {
+    if (e.target.classList.contains('time-cell')) {
+      const slot = parseInt(e.target.dataset.slot);
+      const day = parseInt(e.target.dataset.day);
+      openQuickAddAtSlot(slot, day, 'task');
+    }
+  });
+
+  document.getElementById('oven-grid').addEventListener('click', e => {
+    if (e.target.classList.contains('time-cell')) {
+      const slot = parseInt(e.target.dataset.slot);
+      const day = parseInt(e.target.dataset.day);
+      openQuickAddAtSlot(slot, day, 'oven');
+    }
+  });
+}
+
 function init() {
   loadState();
   seedData();
@@ -2375,6 +2375,7 @@ function init() {
   setupExportImport();
   setupModal();
   setupAddBlockBtn();
+  setupGridDelegation();
 
   updateWeekLabel();
   renderSchedule();
