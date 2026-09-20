@@ -1,3 +1,6 @@
 ## 2023-10-24 - DOM Fragment Optimization for Large Grids
 **Learning:** In vanilla JS applications with large, complex grids (like 768 elements generated via loop in `buildGrid`), repeatedly calling `.appendChild` directly on the active visible container forces multiple browser repaints and reflows which slows down render time.
 **Action:** Use `document.createDocumentFragment()` to batch append all elements in memory, and append the fragment to the active container once at the end. This pattern should be applied when dynamically rendering large lists or grids to prevent layout thrashing.
+## 2023-10-24 - Massive event listener leaks on DOM recreation
+**Learning:** The application frequently recreates large DOM structures like `schedule-grid` and `oven-grid` (672 time cells each) inside `renderTaskBlocks` and `renderOvenBlocks` without diffing. Previously, individual click listeners were attached to each `.time-cell` in a loop during every render, causing severe memory leaks and layout thrashing as thousands of listeners were re-attached over and over again on the frontend.
+**Action:** Always use event delegation on persistent DOM containers (`setupGridDelegation` on `schedule-grid` and `oven-grid`) to capture events on dynamically created/recreated child elements like `.time-cell`.

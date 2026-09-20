@@ -1448,16 +1448,6 @@ function renderTaskBlocks(grid) {
 
     grid.appendChild(el);
   });
-
-  // Click on empty cell to add
-  grid.querySelectorAll('.time-cell').forEach(cell => {
-    cell.addEventListener('click', e => {
-      if (e.target !== cell) return;
-      const slot = parseInt(cell.dataset.slot);
-      const day = parseInt(cell.dataset.day);
-      openQuickAddAtSlot(slot, day, 'task');
-    });
-  });
 }
 
 function createTaskBlockEl(task) {
@@ -1532,16 +1522,6 @@ function renderOvenBlocks(grid) {
     });
 
     grid.appendChild(el);
-  });
-
-  // Click on empty cell
-  grid.querySelectorAll('.time-cell').forEach(cell => {
-    cell.addEventListener('click', e => {
-      if (e.target !== cell) return;
-      const slot = parseInt(cell.dataset.slot);
-      const day = parseInt(cell.dataset.day);
-      openQuickAddAtSlot(slot, day, 'oven');
-    });
   });
 }
 
@@ -2305,6 +2285,19 @@ function setupModal() {
   });
 }
 
+// ─── GRID DELEGATION ─────────────────────────────────────────────────────
+function setupGridDelegation() {
+  const handleGridClick = (type) => (e) => {
+    if (!e.target.classList.contains('time-cell')) return;
+    const slot = parseInt(e.target.dataset.slot);
+    const day = parseInt(e.target.dataset.day);
+    openQuickAddAtSlot(slot, day, type);
+  };
+
+  document.getElementById('schedule-grid').addEventListener('click', handleGridClick('task'));
+  document.getElementById('oven-grid').addEventListener('click', handleGridClick('oven'));
+}
+
 // ─── ADD BLOCK BUTTON ────────────────────────────────────────────────────
 function setupAddBlockBtn() {
   document.getElementById('add-block-btn').addEventListener('click', () => {
@@ -2375,6 +2368,7 @@ function init() {
   setupExportImport();
   setupModal();
   setupAddBlockBtn();
+  setupGridDelegation();
 
   updateWeekLabel();
   renderSchedule();
