@@ -2388,8 +2388,12 @@ function init() {
 
   // Refresh now-line every minute
   setInterval(() => {
-    if (state.activeTab === 'schedule') renderSchedule();
-    if (state.activeTab === 'oven') renderOven();
+    if (state.activeTab === 'schedule') {
+      updateNowLine(document.getElementById('schedule-grid'));
+    }
+    if (state.activeTab === 'oven') {
+      updateNowLine(document.getElementById('oven-grid'));
+    }
   }, 60000);
 }
 
