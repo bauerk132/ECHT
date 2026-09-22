@@ -1,3 +1,3 @@
-## 2023-10-24 - DOM Fragment Optimization for Large Grids
-**Learning:** In vanilla JS applications with large, complex grids (like 768 elements generated via loop in `buildGrid`), repeatedly calling `.appendChild` directly on the active visible container forces multiple browser repaints and reflows which slows down render time.
-**Action:** Use `document.createDocumentFragment()` to batch append all elements in memory, and append the fragment to the active container once at the end. This pattern should be applied when dynamically rendering large lists or grids to prevent layout thrashing.
+## 2024-03-24 - Avoid Re-rendering Entire Vanilla JS App for Minor UI Updates
+**Learning:** The application was calling full `renderSchedule()` and `renderOven()` on an interval just to update a single "current time" line, which rebuilt the entire 700+ node DOM. In vanilla JS applications without built-in DOM diffing, triggering full renders for small dynamic updates causes significant layout thrashing and high CPU usage.
+**Action:** When creating `setInterval` updates in a vanilla app, surgically target the minimum necessary DOM updates (e.g., `updateNowLine(grid)`) rather than relying on full state-driven render functions.
