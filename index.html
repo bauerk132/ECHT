@@ -2388,8 +2388,15 @@ function init() {
 
   // Refresh now-line every minute
   setInterval(() => {
-    if (state.activeTab === 'schedule') renderSchedule();
-    if (state.activeTab === 'oven') renderOven();
+    // ⚡ Bolt: Targeted DOM updates prevent full DOM re-renders inside setInterval loop
+    if (state.activeTab === 'schedule') {
+      const scheduleGrid = document.getElementById('schedule-grid');
+      if (scheduleGrid) updateNowLine(scheduleGrid);
+    }
+    if (state.activeTab === 'oven') {
+      const ovenGrid = document.getElementById('oven-grid');
+      if (ovenGrid) updateNowLine(ovenGrid);
+    }
   }, 60000);
 }
 
