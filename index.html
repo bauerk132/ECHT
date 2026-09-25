@@ -1307,9 +1307,24 @@ function hasOvenConflict() {
 
 function hasScheduleConflict() {
   const active = state.tasks.filter(t => !t.passive);
+  active.sort((a, b) => {
+    if (a.day !== b.day) return a.day - b.day;
+    return a.startSlot - b.startSlot;
+  });
+
+  let maxEndSlot = -1;
+  let currentDay = -1;
+
   for (let i = 0; i < active.length; i++) {
-    for (let j = i + 1; j < active.length; j++) {
-      if (blocksOverlap(active[i], active[j])) return true;
+    const t = active[i];
+    if (t.day !== currentDay) {
+        currentDay = t.day;
+        maxEndSlot = t.endSlot;
+    } else {
+        if (t.startSlot < maxEndSlot) {
+            return true;
+        }
+        maxEndSlot = Math.max(maxEndSlot, t.endSlot);
     }
   }
   return false;
