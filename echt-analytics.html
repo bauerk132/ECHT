@@ -991,6 +991,15 @@ function computeAll() {
   const tasks = DATA.tasks;
   const oven = DATA.ovenBlocks;
 
+  const tasksByDay = Array.from({length: 7}, () => []);
+  const ovenByDayLoop = Array.from({length: 7}, () => []);
+  for (let i = 0; i < tasks.length; i++) {
+    if (tasksByDay[tasks[i].day]) tasksByDay[tasks[i].day].push(tasks[i]);
+  }
+  for (let i = 0; i < oven.length; i++) {
+    if (ovenByDayLoop[oven[i].day]) ovenByDayLoop[oven[i].day].push(oven[i]);
+  }
+
   // ── Basic totals
   const totalTaskMin = tasks.reduce((s,t) => s + (t.endSlot - t.startSlot)*15, 0);
   const activeMin = tasks.filter(t=>!t.passive).reduce((s,t) => s + (t.endSlot-t.startSlot)*15, 0);
@@ -1039,13 +1048,17 @@ function computeAll() {
   // Per day: find task-active windows and oven-active windows, compute gaps
   const idleGaps = []; // { day, startSlot, endSlot, durationMin }
   for (let day = 0; day < 7; day++) {
-    const dayTasks = tasks.filter(t => t.day === day);
-    const dayOven = oven.filter(b => b.day === day);
+    const dayTasks = tasksByDay[day];
+    const dayOven = ovenByDayLoop[day];
     if (dayTasks.length === 0) continue;
 
     // Task active window
-    const taskStart = Math.min(...dayTasks.map(t => t.startSlot));
-    const taskEnd = Math.max(...dayTasks.map(t => t.endSlot));
+    let taskStart = Infinity;
+    let taskEnd = -Infinity;
+    for (let i = 0; i < dayTasks.length; i++) {
+      if (dayTasks[i].startSlot < taskStart) taskStart = dayTasks[i].startSlot;
+      if (dayTasks[i].endSlot > taskEnd) taskEnd = dayTasks[i].endSlot;
+    }
 
     // Build oven coverage bitmap for this day
     const ovenCover = new Array(TOTAL_SLOTS).fill(false);
@@ -1119,16 +1132,21 @@ function computeAll() {
   if (taskDays.size > 0) {
     let totalTaskSlots = 0, ovenDuringTask = 0;
     taskDays.forEach(day => {
-      const dayTasks = tasks.filter(t => t.day === day);
-      const dayOven = oven.filter(b => b.day === day);
-      const taskStart = Math.min(...dayTasks.map(t => t.startSlot));
-      const taskEnd = Math.max(...dayTasks.map(t => t.endSlot));
+      const dayTasks = tasksByDay[day];
+      const dayOven = ovenByDayLoop[day];
+      let taskStart = Infinity;
+      let taskEnd = -Infinity;
+      for (let i = 0; i < dayTasks.length; i++) {
+        if (dayTasks[i].startSlot < taskStart) taskStart = dayTasks[i].startSlot;
+        if (dayTasks[i].endSlot > taskEnd) taskEnd = dayTasks[i].endSlot;
+      }
       totalTaskSlots += (taskEnd - taskStart);
-      dayOven.forEach(b => {
+      for (let i = 0; i < dayOven.length; i++) {
+        const b = dayOven[i];
         const os = Math.max(b.startSlot, taskStart);
         const oe = Math.min(b.endSlot, taskEnd);
         if (oe > os) ovenDuringTask += (oe - os);
-      });
+      }
     });
     ovenUtilScore = totalTaskSlots > 0 ? Math.min(30, Math.round((ovenDuringTask / totalTaskSlots) * 30)) : 0;
   }
