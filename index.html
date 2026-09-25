@@ -1296,10 +1296,17 @@ function blocksOverlap(a, b) {
 }
 
 function hasOvenConflict() {
-  const ob = state.ovenBlocks;
+  if (state.ovenBlocks.length < 2) return false;
+  const ob = [...state.ovenBlocks].sort((a, b) => a.day !== b.day ? a.day - b.day : a.startSlot - b.startSlot);
+  let maxEnd = -1;
+  let currentDay = -1;
   for (let i = 0; i < ob.length; i++) {
-    for (let j = i + 1; j < ob.length; j++) {
-      if (blocksOverlap(ob[i], ob[j])) return true;
+    if (ob[i].day !== currentDay) {
+      currentDay = ob[i].day;
+      maxEnd = ob[i].endSlot;
+    } else {
+      if (ob[i].startSlot < maxEnd) return true;
+      maxEnd = Math.max(maxEnd, ob[i].endSlot);
     }
   }
   return false;
@@ -1307,9 +1314,17 @@ function hasOvenConflict() {
 
 function hasScheduleConflict() {
   const active = state.tasks.filter(t => !t.passive);
+  if (active.length < 2) return false;
+  active.sort((a, b) => a.day !== b.day ? a.day - b.day : a.startSlot - b.startSlot);
+  let maxEnd = -1;
+  let currentDay = -1;
   for (let i = 0; i < active.length; i++) {
-    for (let j = i + 1; j < active.length; j++) {
-      if (blocksOverlap(active[i], active[j])) return true;
+    if (active[i].day !== currentDay) {
+      currentDay = active[i].day;
+      maxEnd = active[i].endSlot;
+    } else {
+      if (active[i].startSlot < maxEnd) return true;
+      maxEnd = Math.max(maxEnd, active[i].endSlot);
     }
   }
   return false;
@@ -1317,13 +1332,22 @@ function hasScheduleConflict() {
 
 function getOvenConflictIds() {
   const conflicts = new Set();
-  const ob = state.ovenBlocks;
+  if (state.ovenBlocks.length < 2) return conflicts;
+  const ob = [...state.ovenBlocks].sort((a, b) => a.day !== b.day ? a.day - b.day : a.startSlot - b.startSlot);
+  let active = [];
+  let currentDay = -1;
   for (let i = 0; i < ob.length; i++) {
-    for (let j = i + 1; j < ob.length; j++) {
-      if (blocksOverlap(ob[i], ob[j])) {
-        conflicts.add(ob[i].id);
-        conflicts.add(ob[j].id);
+    const b = ob[i];
+    if (b.day !== currentDay) {
+      currentDay = b.day;
+      active = [b];
+    } else {
+      active = active.filter(a => a.endSlot > b.startSlot);
+      for (const a of active) {
+        conflicts.add(a.id);
+        conflicts.add(b.id);
       }
+      active.push(b);
     }
   }
   return conflicts;
