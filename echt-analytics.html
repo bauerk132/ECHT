@@ -1035,12 +1035,17 @@ function computeAll() {
     ovenHourlyRate[h] = daysWithOven.size / 7;
   }
 
+  const tasksByDay = Array.from({ length: 7 }, () => []);
+  const ovenByDayMap = Array.from({ length: 7 }, () => []);
+  tasks.forEach(t => { if (t.day >= 0 && t.day < 7) tasksByDay[t.day].push(t); });
+  oven.forEach(b => { if (b.day >= 0 && b.day < 7) ovenByDayMap[b.day].push(b); });
+
   // ── Idle oven gaps: hours where tasks run but oven is off
   // Per day: find task-active windows and oven-active windows, compute gaps
   const idleGaps = []; // { day, startSlot, endSlot, durationMin }
   for (let day = 0; day < 7; day++) {
-    const dayTasks = tasks.filter(t => t.day === day);
-    const dayOven = oven.filter(b => b.day === day);
+    const dayTasks = tasksByDay[day];
+    const dayOven = ovenByDayMap[day];
     if (dayTasks.length === 0) continue;
 
     // Task active window
@@ -1119,8 +1124,8 @@ function computeAll() {
   if (taskDays.size > 0) {
     let totalTaskSlots = 0, ovenDuringTask = 0;
     taskDays.forEach(day => {
-      const dayTasks = tasks.filter(t => t.day === day);
-      const dayOven = oven.filter(b => b.day === day);
+      const dayTasks = tasksByDay[day];
+      const dayOven = ovenByDayMap[day];
       const taskStart = Math.min(...dayTasks.map(t => t.startSlot));
       const taskEnd = Math.max(...dayTasks.map(t => t.endSlot));
       totalTaskSlots += (taskEnd - taskStart);
