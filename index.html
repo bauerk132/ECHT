@@ -2116,12 +2116,21 @@ function buildCategoryList() {
 }
 
 function updateCategoryCounts() {
-  CATEGORIES.forEach(c => {
-    const count = state.tasks.filter(t => t.category === c.id).length
-                + state.ovenBlocks.filter(b => b.category === c.id).length;
+  const counts = {};
+  for (let i = 0; i < state.tasks.length; i++) {
+    const cat = state.tasks[i].category;
+    counts[cat] = (counts[cat] || 0) + 1;
+  }
+  for (let i = 0; i < state.ovenBlocks.length; i++) {
+    const cat = state.ovenBlocks[i].category;
+    counts[cat] = (counts[cat] || 0) + 1;
+  }
+
+  for (let i = 0; i < CATEGORIES.length; i++) {
+    const c = CATEGORIES[i];
     const el = document.getElementById(`cat-count-${c.id}`);
-    if (el) el.textContent = count || '';
-  });
+    if (el) el.textContent = counts[c.id] || '';
+  }
 }
 
 function buildCategorySelects() {
