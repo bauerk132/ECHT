@@ -936,6 +936,15 @@ let DATA = { tasks: [], ovenBlocks: [] };
 let dataSource = 'none';
 
 // ─── UTILS ───────────────────────────────────────────────────────────────
+function escHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
 function slotToTime(slot) {
   const h = Math.floor(slot / 4), m = (slot % 4) * 15;
   return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
@@ -1457,8 +1466,8 @@ function renderOvenGantt(A) {
       const e = Math.min(b.endSlot, endSlot);
       if (e <= s) return '';
       return `
-        <div class="gantt-block" style="left:${pct(s)};width:${pctW(s,e)};background:${isConflict?'rgba(139,0,0,0.5)':'rgba(192,98,42,0.5)'};border-left:2px solid ${isConflict?'#8b0000':'var(--echt-ember)'}" title="${b.name} ${slotToTime(b.startSlot)}–${slotToTime(b.endSlot)}${b.temp?' @ '+b.temp+'°F':''}">
-          <span class="gantt-block-label">${b.name}</span>
+        <div class="gantt-block" style="left:${pct(s)};width:${pctW(s,e)};background:${isConflict?'rgba(139,0,0,0.5)':'rgba(192,98,42,0.5)'};border-left:2px solid ${isConflict?'#8b0000':'var(--echt-ember)'}" title="${escHtml(b.name)} ${slotToTime(b.startSlot)}–${slotToTime(b.endSlot)}${b.temp?' @ '+escHtml(b.temp)+'°F':''}">
+          <span class="gantt-block-label">${escHtml(b.name)}</span>
         </div>
       `;
     }).join('');
@@ -1642,8 +1651,8 @@ function renderConflictTable(A) {
             <tr>
               <td>${badge}</td>
               <td>${DAYS[c.a.day]}</td>
-              <td style="font-size:11px">${c.a.name}<br><span style="font-family:var(--font-mono);font-size:9px;color:var(--echt-tan)">${slotToTime(c.a.startSlot)}–${slotToTime(c.a.endSlot)}</span></td>
-              <td style="font-size:11px">${c.b.name}<br><span style="font-family:var(--font-mono);font-size:9px;color:var(--echt-tan)">${slotToTime(c.b.startSlot)}–${slotToTime(c.b.endSlot)}</span></td>
+              <td style="font-size:11px">${escHtml(c.a.name)}<br><span style="font-family:var(--font-mono);font-size:9px;color:var(--echt-tan)">${slotToTime(c.a.startSlot)}–${slotToTime(c.a.endSlot)}</span></td>
+              <td style="font-size:11px">${escHtml(c.b.name)}<br><span style="font-family:var(--font-mono);font-size:9px;color:var(--echt-tan)">${slotToTime(c.b.startSlot)}–${slotToTime(c.b.endSlot)}</span></td>
               <td style="font-family:var(--font-mono);font-size:10px;color:var(--echt-ember)">${fmtH(overlapMin)}</td>
             </tr>
           `;
