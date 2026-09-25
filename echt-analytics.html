@@ -1790,10 +1790,13 @@ function renderRecommendations(A) {
   }
 
   // Oven underutilized on busy days
+  const dayOvenCounts = {};
+  DATA.ovenBlocks.forEach(b => dayOvenCounts[b.day] = (dayOvenCounts[b.day] || 0) + 1);
+  const dayTaskCounts = {};
+  DATA.tasks.forEach(t => dayTaskCounts[t.day] = (dayTaskCounts[t.day] || 0) + 1);
+
   const busyDaysWithoutOven = [...A.taskDays].filter(d => {
-    const dayOven = DATA.ovenBlocks.filter(b => b.day === d);
-    const dayTasks = DATA.tasks.filter(t => t.day === d);
-    return dayOven.length === 0 && dayTasks.length >= 3;
+    return !dayOvenCounts[d] && (dayTaskCounts[d] || 0) >= 3;
   });
   if (busyDaysWithoutOven.length > 0) {
     recs.push({

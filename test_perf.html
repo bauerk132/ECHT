@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head></head>
+<body>
+<script>
+  const DATA = { tasks: [], ovenBlocks: [] };
+  const A = { taskDays: new Set() };
+  for (let i = 0; i < 10000; i++) {
+    const day = i % 7;
+    A.taskDays.add(day);
+    DATA.tasks.push({ day });
+    if (i % 10 !== 0) DATA.ovenBlocks.push({ day });
+  }
+
+  const start1 = performance.now();
+  for (let iter = 0; iter < 1000; iter++) {
+    const busyDaysWithoutOven = [...A.taskDays].filter(d => {
+      const dayOven = DATA.ovenBlocks.filter(b => b.day === d);
+      const dayTasks = DATA.tasks.filter(t => t.day === d);
+      return dayOven.length === 0 && dayTasks.length >= 3;
+    });
+  }
+  const end1 = performance.now();
+  console.log('Original:', end1 - start1, 'ms');
+
+  const start2 = performance.now();
+  for (let iter = 0; iter < 1000; iter++) {
+    const ovenCounts = {};
+    const taskCounts = {};
+    for (const b of DATA.ovenBlocks) ovenCounts[b.day] = (ovenCounts[b.day] || 0) + 1;
+    for (const t of DATA.tasks) taskCounts[t.day] = (taskCounts[t.day] || 0) + 1;
+
+    const busyDaysWithoutOven2 = [...A.taskDays].filter(d => {
+      return !ovenCounts[d] && (taskCounts[d] || 0) >= 3;
+    });
+  }
+  const end2 = performance.now();
+  console.log('Optimized:', end2 - start2, 'ms');
+
+</script>
+</body>
+</html>
