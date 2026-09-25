@@ -1,0 +1,7 @@
+Original: 489.27853300000004ms
+Fast: 8.090673999999922ms
+Case 0: slow=true fast=true
+Case 1: slow=false fast=false
+Case 2: slow=true fast=true
+Case 3: slow=true fast=true
+Case 4: slow=false fast=false
