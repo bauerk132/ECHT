@@ -1,3 +1,6 @@
 ## 2023-10-24 - DOM Fragment Optimization for Large Grids
 **Learning:** In vanilla JS applications with large, complex grids (like 768 elements generated via loop in `buildGrid`), repeatedly calling `.appendChild` directly on the active visible container forces multiple browser repaints and reflows which slows down render time.
 **Action:** Use `document.createDocumentFragment()` to batch append all elements in memory, and append the fragment to the active container once at the end. This pattern should be applied when dynamically rendering large lists or grids to prevent layout thrashing.
+## 2024-05-22 - Optimizing O(N^2) interval overlapping
+**Learning:** In the `index.html` vanilla javascript logic, detecting overlapping intervals was done through a pairwise comparison that scaled in O(N^2). This creates significant lag for a large amount of intervals on the same day. Using a sweep-line interval checking algorithm, you can detect conflicts in O(N log N) by sorting elements and scanning linearly.
+**Action:** Replace nested loops for overlap checks with sorted sweep-line approach. When intervals span across multiple buckets (e.g. `day`), grouping elements before checking bounds simplifies the overlap constraint check.
