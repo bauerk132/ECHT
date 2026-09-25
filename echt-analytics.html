@@ -1093,9 +1093,14 @@ function computeAll() {
     }
   }
   const activeConflicts = [];
-  const activeTasks = tasks.filter(t => !t.passive);
+  const activeTasks = tasks.filter(t => !t.passive).sort((a, b) => {
+    if (a.day !== b.day) return a.day - b.day;
+    return a.startSlot - b.startSlot;
+  });
   for (let i = 0; i < activeTasks.length; i++) {
-    for (let j = i+1; j < activeTasks.length; j++) {
+    for (let j = i + 1; j < activeTasks.length; j++) {
+      if (activeTasks[i].day !== activeTasks[j].day) break;
+      if (activeTasks[j].startSlot >= activeTasks[i].endSlot) break;
       if (blocksOverlap(activeTasks[i], activeTasks[j])) {
         activeConflicts.push({ type: 'active', a: activeTasks[i], b: activeTasks[j] });
       }
