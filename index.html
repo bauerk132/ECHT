@@ -45,6 +45,11 @@
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+  *:focus-visible {
+    outline: 2px solid var(--echt-gold);
+    outline-offset: 2px;
+  }
+
   html, body {
     height: 100%;
     background: var(--echt-black);
@@ -577,7 +582,8 @@
     line-height: 1;
     padding: 0;
   }
-  .task-block:hover .block-delete { display: flex; }
+  .task-block:hover .block-delete, .task-block:focus-within .block-delete,
+  .oven-block:hover .block-delete, .oven-block:focus-within .block-delete { display: flex; }
   .block-delete:hover { background: var(--echt-rust); color: white; }
 
   /* ─── OVEN TRACKER ──────────────────────────────────────────────────── */
@@ -969,9 +975,9 @@
     <div class="echt-wordmark">EcHT<span>/ Bakery Schedule</span></div>
 
     <div class="week-nav">
-      <button id="prev-week" title="Previous week">‹</button>
+      <button id="prev-week" title="Previous week" aria-label="Previous week">‹</button>
       <div id="week-label">—</div>
-      <button id="next-week" title="Next week">›</button>
+      <button id="next-week" title="Next week" aria-label="Next week">›</button>
       <button id="today-btn" class="btn" style="margin-left:4px">Today</button>
     </div>
 
@@ -1473,7 +1479,7 @@ function createTaskBlockEl(task) {
 
   const dur = (task.endSlot - task.startSlot) * 15;
   el.innerHTML = `
-    <button class="block-delete" title="Remove">×</button>
+    <button class="block-delete" title="Remove" aria-label="Remove">×</button>
     <div class="block-title">${escHtml(task.name)}</div>
     ${dur > 30 ? `<div class="block-time">${slotToTime(task.startSlot)}–${slotToTime(task.endSlot)}</div>` : ''}
     ${dur > 45 ? `<div class="block-cat">${getCatName(task.category)}</div>` : ''}
@@ -1510,7 +1516,7 @@ function renderOvenBlocks(grid) {
 
     const dur = (block.endSlot - block.startSlot) * 15;
     el.innerHTML = `
-      <button class="block-delete" title="Remove">×</button>
+      <button class="block-delete" title="Remove" aria-label="Remove">×</button>
       ${conflictIds.has(block.id) ? `<div class="conflict-badge">⚠ CONFLICT</div>` : ''}
       <div class="block-title">${escHtml(block.name)}</div>
       ${dur > 30 ? `<div class="block-time">${slotToTime(block.startSlot)}–${slotToTime(block.endSlot)}</div>` : ''}
