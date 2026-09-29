@@ -2388,8 +2388,14 @@ function init() {
 
   // Refresh now-line every minute
   setInterval(() => {
-    if (state.activeTab === 'schedule') renderSchedule();
-    if (state.activeTab === 'oven') renderOven();
+    // ⚡ Bolt: Surgically update the current time line instead of triggering full
+    // DOM re-renders (renderSchedule/renderOven) which causes severe layout thrashing.
+    if (state.activeTab === 'schedule') {
+      updateNowLine(document.getElementById('schedule-grid'));
+    }
+    if (state.activeTab === 'oven') {
+      updateNowLine(document.getElementById('oven-grid'));
+    }
   }, 60000);
 }
 
