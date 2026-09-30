@@ -48,6 +48,12 @@ html, body {
   min-height: 100vh;
 }
 
+/* ─── ACCESSIBILITY ─────────────────────────────────────────────────── */
+*:focus-visible {
+  outline: 2px solid var(--echt-gold);
+  outline-offset: 2px;
+}
+
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: var(--echt-dark); }
 ::-webkit-scrollbar-thumb { background: var(--echt-warm); border-radius: 3px; }
