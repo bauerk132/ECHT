@@ -1389,6 +1389,8 @@ function updateNowLine(grid) {
   const existing = grid.querySelector('.now-line');
   if (existing) existing.remove();
 
+  if (state.weekOffset !== 0) return;
+
   const now = new Date();
   const todayIdx = (now.getDay() + 6) % 7; // Mon=0
   const slot = (now.getHours() * 60 + now.getMinutes()) / 15;
@@ -2388,8 +2390,15 @@ function init() {
 
   // Refresh now-line every minute
   setInterval(() => {
-    if (state.activeTab === 'schedule') renderSchedule();
-    if (state.activeTab === 'oven') renderOven();
+    // ⚡ Bolt: Targeted update of the now-line to prevent severe layout thrashing from full grid re-renders
+    if (state.activeTab === 'schedule') {
+      const grid = document.getElementById('schedule-grid');
+      if (grid) updateNowLine(grid);
+    }
+    if (state.activeTab === 'oven') {
+      const grid = document.getElementById('oven-grid');
+      if (grid) updateNowLine(grid);
+    }
   }, 60000);
 }
 
