@@ -1738,93 +1738,104 @@ function renderConflictCanvas(A) {
 }
 
 // ── RECOMMENDATIONS ───────────────────────────────────────────────────────
-function renderRecommendations(A) {
-  const recs = [];
-
+const RECOMMENDATION_RULES = [
   // Oven conflicts — highest priority
-  if (A.ovenConflicts.length > 0) {
-    recs.push({
-      priority: 1,
-      title: 'Resolve Oven Conflicts Before Baking',
-      text: `${A.ovenConflicts.length} oven block${A.ovenConflicts.length>1?'s overlap':' overlaps'}. The oven can only run one thing at a time. Stagger start times by at least the bake duration of the first item, or batch items that share the same temperature.`,
-      impact: 'high',
-    });
-  }
-
+  (A) => {
+    if (A.ovenConflicts.length > 0) {
+      return {
+        priority: 1,
+        title: 'Resolve Oven Conflicts Before Baking',
+        text: `${A.ovenConflicts.length} oven block${A.ovenConflicts.length>1?'s overlap':' overlaps'}. The oven can only run one thing at a time. Stagger start times by at least the bake duration of the first item, or batch items that share the same temperature.`,
+        impact: 'high',
+      };
+    }
+  },
   // Large idle gaps
-  const bigGaps = A.idleGaps.filter(g => g.durationMin >= 60);
-  if (bigGaps.length > 0) {
-    const totalIdleH = (bigGaps.reduce((s,g)=>s+g.durationMin,0)/60).toFixed(1);
-    recs.push({
-      priority: 2,
-      title: `${bigGaps.length} Idle Oven Gap${bigGaps.length>1?'s':''} — ${totalIdleH}h of Unused Heat`,
-      text: `You have ${bigGaps.length} window${bigGaps.length>1?'s':''} of 60+ minutes where prep tasks are running but the oven is cold. Consider scheduling a bake during these windows — even a quick focaccia or a batch of cookies can fill the gap and improve throughput.`,
-      impact: 'high',
-    });
-  }
-
+  (A) => {
+    const bigGaps = A.idleGaps.filter(g => g.durationMin >= 60);
+    if (bigGaps.length > 0) {
+      const totalIdleH = (bigGaps.reduce((s,g)=>s+g.durationMin,0)/60).toFixed(1);
+      return {
+        priority: 2,
+        title: `${bigGaps.length} Idle Oven Gap${bigGaps.length>1?'s':''} — ${totalIdleH}h of Unused Heat`,
+        text: `You have ${bigGaps.length} window${bigGaps.length>1?'s':''} of 60+ minutes where prep tasks are running but the oven is cold. Consider scheduling a bake during these windows — even a quick focaccia or a batch of cookies can fill the gap and improve throughput.`,
+        impact: 'high',
+      };
+    }
+  },
   // Low passive ratio
-  const passiveRatio = A.totalTaskMin > 0 ? A.passiveMin / A.totalTaskMin : 0;
-  if (passiveRatio < 0.25 && A.totalTaskMin > 120) {
-    recs.push({
-      priority: 3,
-      title: 'Low Passive Time — Stack More During Waits',
-      text: `Only ${Math.round(passiveRatio*100)}% of your scheduled time is passive. Most baked goods have significant rest windows (bulk ferment, proof, cool). Mark those as passive so you can layer active tasks on top — laminating croissant dough while bagels cold-retard, for example.`,
-      impact: 'medium',
-    });
-  }
-
+  (A) => {
+    const passiveRatio = A.totalTaskMin > 0 ? A.passiveMin / A.totalTaskMin : 0;
+    if (passiveRatio < 0.25 && A.totalTaskMin > 120) {
+      return {
+        priority: 3,
+        title: 'Low Passive Time — Stack More During Waits',
+        text: `Only ${Math.round(passiveRatio*100)}% of your scheduled time is passive. Most baked goods have significant rest windows (bulk ferment, proof, cool). Mark those as passive so you can layer active tasks on top — laminating croissant dough while bagels cold-retard, for example.`,
+        impact: 'medium',
+      };
+    }
+  },
   // High passive ratio
-  if (passiveRatio > 0.75 && A.totalTaskMin > 120) {
-    recs.push({
-      priority: 3,
-      title: 'High Passive Ratio — Good Stacking Opportunity',
-      text: `${Math.round(passiveRatio*100)}% of your time is passive. That's a strong foundation for parallel production. Check whether your oven blocks are aligned with these passive windows — the oven should be running while dough rests, not sitting idle.`,
-      impact: 'medium',
-    });
-  }
-
+  (A) => {
+    const passiveRatio = A.totalTaskMin > 0 ? A.passiveMin / A.totalTaskMin : 0;
+    if (passiveRatio > 0.75 && A.totalTaskMin > 120) {
+      return {
+        priority: 3,
+        title: 'High Passive Ratio — Good Stacking Opportunity',
+        text: `${Math.round(passiveRatio*100)}% of your time is passive. That's a strong foundation for parallel production. Check whether your oven blocks are aligned with these passive windows — the oven should be running while dough rests, not sitting idle.`,
+        impact: 'medium',
+      };
+    }
+  },
   // Active conflicts
-  if (A.activeConflicts.length > 0) {
-    recs.push({
-      priority: 4,
-      title: 'Active Task Overlaps Detected',
-      text: `${A.activeConflicts.length} active (non-passive) task${A.activeConflicts.length>1?'s':''} overlap. If these require your hands, you can't do both at once. Either mark one as passive (if it's truly a wait), stagger the start times, or delegate.`,
-      impact: 'medium',
-    });
-  }
-
+  (A) => {
+    if (A.activeConflicts.length > 0) {
+      return {
+        priority: 4,
+        title: 'Active Task Overlaps Detected',
+        text: `${A.activeConflicts.length} active (non-passive) task${A.activeConflicts.length>1?'s':''} overlap. If these require your hands, you can't do both at once. Either mark one as passive (if it's truly a wait), stagger the start times, or delegate.`,
+        impact: 'medium',
+      };
+    }
+  },
   // Oven underutilized on busy days
-  const busyDaysWithoutOven = [...A.taskDays].filter(d => {
-    const dayOven = DATA.ovenBlocks.filter(b => b.day === d);
-    const dayTasks = DATA.tasks.filter(t => t.day === d);
-    return dayOven.length === 0 && dayTasks.length >= 3;
-  });
-  if (busyDaysWithoutOven.length > 0) {
-    recs.push({
-      priority: 5,
-      title: `Prep Days Without Oven — ${busyDaysWithoutOven.map(d=>DAYS[d]).join(', ')}`,
-      text: `These days have 3+ prep tasks but no oven blocks. This may be intentional (lamination day, cold prep) — but if any of these items need to bake, you're missing a scheduling step. Review whether a bake block belongs here.`,
-      impact: 'low',
+  (A) => {
+    const busyDaysWithoutOven = [...A.taskDays].filter(d => {
+      const dayOven = DATA.ovenBlocks.filter(b => b.day === d);
+      const dayTasks = DATA.tasks.filter(t => t.day === d);
+      return dayOven.length === 0 && dayTasks.length >= 3;
     });
-  }
-
+    if (busyDaysWithoutOven.length > 0) {
+      return {
+        priority: 5,
+        title: `Prep Days Without Oven — ${busyDaysWithoutOven.map(d=>DAYS[d]).join(', ')}`,
+        text: `These days have 3+ prep tasks but no oven blocks. This may be intentional (lamination day, cold prep) — but if any of these items need to bake, you're missing a scheduling step. Review whether a bake block belongs here.`,
+        impact: 'low',
+      };
+    }
+  },
   // Score-based general advice
-  if (A.score < 50) {
-    recs.push({
-      priority: 6,
-      title: 'Schedule Needs Structural Work',
-      text: `Your efficiency score is ${A.score}/100. Focus on the top priorities above — resolving conflicts and filling idle oven gaps will have the biggest impact. A well-structured bake schedule means less stress, better product consistency, and more throughput per shift.`,
-      impact: 'medium',
-    });
-  } else if (A.score >= 80) {
-    recs.push({
-      priority: 6,
-      title: 'Strong Schedule — Refine the Details',
-      text: `Score: ${A.score}/100. Your week is well-structured. At this level, gains come from micro-optimizations: tightening oven transitions, reducing preheat waste between bakes, and ensuring your highest-margin items get the best oven windows.`,
-      impact: 'low',
-    });
+  (A) => {
+    if (A.score < 50) {
+      return {
+        priority: 6,
+        title: 'Schedule Needs Structural Work',
+        text: `Your efficiency score is ${A.score}/100. Focus on the top priorities above — resolving conflicts and filling idle oven gaps will have the biggest impact. A well-structured bake schedule means less stress, better product consistency, and more throughput per shift.`,
+        impact: 'medium',
+      };
+    } else if (A.score >= 80) {
+      return {
+        priority: 6,
+        title: 'Strong Schedule — Refine the Details',
+        text: `Score: ${A.score}/100. Your week is well-structured. At this level, gains come from micro-optimizations: tightening oven transitions, reducing preheat waste between bakes, and ensuring your highest-margin items get the best oven windows.`,
+        impact: 'low',
+      };
+    }
   }
+];
+
+function renderRecommendations(A) {
+  const recs = RECOMMENDATION_RULES.map(rule => rule(A)).filter(Boolean);
 
   if (recs.length === 0) {
     recs.push({
