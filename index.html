@@ -45,6 +45,11 @@
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+  :focus-visible {
+    outline: 2px solid var(--echt-gold);
+    outline-offset: 2px;
+  }
+
   html, body {
     height: 100%;
     background: var(--echt-black);
@@ -1033,12 +1038,12 @@
         </div>
 
         <div class="toggle-row">
-          <div>
+          <label for="qa-passive" style="cursor: pointer;">
             <div class="toggle-label">Passive / Waiting</div>
             <div class="toggle-sub">Can overlap other tasks</div>
-          </div>
+          </label>
           <label class="toggle-switch">
-            <input type="checkbox" id="qa-passive">
+          <input type="checkbox" id="qa-passive" aria-label="Passive / Waiting">
             <span class="toggle-slider"></span>
           </label>
         </div>
@@ -1301,9 +1306,12 @@ function blocksOverlap(a, b) {
 }
 
 function hasOvenConflict() {
-  const ob = state.ovenBlocks;
+  // ⚡ Bolt: Pre-sort elements by day and startSlot to allow early short-circuiting
+  // and prevent O(N^2) bottlenecks when rendering the grid with many blocks.
+  const ob = [...state.ovenBlocks].sort((a, b) => a.day - b.day || a.startSlot - b.startSlot);
   for (let i = 0; i < ob.length; i++) {
     for (let j = i + 1; j < ob.length; j++) {
+      if (ob[j].day > ob[i].day || ob[j].startSlot >= ob[i].endSlot) break;
       if (blocksOverlap(ob[i], ob[j])) return true;
     }
   }
@@ -1311,9 +1319,11 @@ function hasOvenConflict() {
 }
 
 function hasScheduleConflict() {
-  const active = state.tasks.filter(t => !t.passive);
+  // ⚡ Bolt: Pre-sort active tasks to short-circuit the inner loop, changing O(N^2) to near O(N).
+  const active = state.tasks.filter(t => !t.passive).sort((a, b) => a.day - b.day || a.startSlot - b.startSlot);
   for (let i = 0; i < active.length; i++) {
     for (let j = i + 1; j < active.length; j++) {
+      if (active[j].day > active[i].day || active[j].startSlot >= active[i].endSlot) break;
       if (blocksOverlap(active[i], active[j])) return true;
     }
   }
@@ -1321,10 +1331,12 @@ function hasScheduleConflict() {
 }
 
 function getOvenConflictIds() {
+  // ⚡ Bolt: Optimized overlap extraction to avoid full O(N^2) iteration over all blocks.
   const conflicts = new Set();
-  const ob = state.ovenBlocks;
+  const ob = [...state.ovenBlocks].sort((a, b) => a.day - b.day || a.startSlot - b.startSlot);
   for (let i = 0; i < ob.length; i++) {
     for (let j = i + 1; j < ob.length; j++) {
+      if (ob[j].day > ob[i].day || ob[j].startSlot >= ob[i].endSlot) break;
       if (blocksOverlap(ob[i], ob[j])) {
         conflicts.add(ob[i].id);
         conflicts.add(ob[j].id);
@@ -1478,7 +1490,11 @@ function createTaskBlockEl(task) {
 
   const dur = (task.endSlot - task.startSlot) * 15;
   el.innerHTML = `
+<<<<<<< HEAD
     <button class="block-delete" title="Remove" aria-label="Delete task">×</button>
+=======
+    <button class="block-delete" title="Remove" aria-label="Remove block">×</button>
+>>>>>>> origin/main
     <div class="block-title">${escHtml(task.name)}</div>
     ${dur > 30 ? `<div class="block-time">${slotToTime(task.startSlot)}–${slotToTime(task.endSlot)}</div>` : ''}
     ${dur > 45 ? `<div class="block-cat">${getCatName(task.category)}</div>` : ''}
@@ -1515,7 +1531,11 @@ function renderOvenBlocks(grid) {
 
     const dur = (block.endSlot - block.startSlot) * 15;
     el.innerHTML = `
+<<<<<<< HEAD
       <button class="block-delete" title="Remove" aria-label="Delete oven block">×</button>
+=======
+      <button class="block-delete" title="Remove" aria-label="Remove block">×</button>
+>>>>>>> origin/main
       ${conflictIds.has(block.id) ? `<div class="conflict-badge">⚠ CONFLICT</div>` : ''}
       <div class="block-title">${escHtml(block.name)}</div>
       ${dur > 30 ? `<div class="block-time">${slotToTime(block.startSlot)}–${slotToTime(block.endSlot)}</div>` : ''}
@@ -1819,12 +1839,12 @@ function openEditModal(task) {
         <textarea class="form-textarea" id="edit-notes">${escHtml(task.notes || '')}</textarea>
       </div>
       <div class="toggle-row">
-        <div>
+        <label for="edit-passive" style="cursor: pointer;">
           <div class="toggle-label">Passive / Waiting</div>
           <div class="toggle-sub">Can overlap other tasks</div>
-        </div>
+        </label>
         <label class="toggle-switch">
-          <input type="checkbox" id="edit-passive" ${task.passive ? 'checked' : ''}>
+          <input type="checkbox" id="edit-passive" aria-label="Passive / Waiting" ${task.passive ? 'checked' : ''}>
           <span class="toggle-slider"></span>
         </label>
       </div>
@@ -2393,8 +2413,9 @@ function init() {
 
   // Refresh now-line every minute
   setInterval(() => {
-    if (state.activeTab === 'schedule') renderSchedule();
-    if (state.activeTab === 'oven') renderOven();
+    // ⚡ Bolt: Update only the now-line instead of full re-render to prevent layout thrashing
+    if (state.activeTab === 'schedule') updateNowLine(document.getElementById('schedule-grid'));
+    if (state.activeTab === 'oven') updateNowLine(document.getElementById('oven-grid'));
   }, 60000);
 }
 
