@@ -1098,10 +1098,10 @@
   <main id="main">
 
     <!-- Tab bar -->
-    <div class="tab-bar">
-      <div class="tab active" data-tab="schedule">Weekly Schedule</div>
-      <div class="tab" data-tab="oven">Oven Tracker</div>
-      <div class="tab" data-tab="analytics">Analytics</div>
+    <div class="tab-bar" role="tablist">
+      <div class="tab active" data-tab="schedule" role="tab" tabindex="0" aria-selected="true">Weekly Schedule</div>
+      <div class="tab" data-tab="oven" role="tab" tabindex="0" aria-selected="false">Oven Tracker</div>
+      <div class="tab" data-tab="analytics" role="tab" tabindex="0" aria-selected="false">Analytics</div>
     </div>
 
     <!-- ── SCHEDULE VIEW ─────────────────────────────────────────────── -->
@@ -2218,18 +2218,30 @@ function setupQuickAdd() {
 
 // ─── TABS ────────────────────────────────────────────────────────────────
 function setupTabs() {
+  function activateTab(tab) {
+    document.querySelectorAll('.tab').forEach(t => {
+      t.classList.remove('active');
+      t.setAttribute('aria-selected', 'false');
+    });
+    tab.classList.add('active');
+    tab.setAttribute('aria-selected', 'true');
+    state.activeTab = tab.dataset.tab;
+
+    document.getElementById('schedule-view').classList.toggle('hidden', state.activeTab !== 'schedule');
+    document.getElementById('oven-view').classList.toggle('hidden', state.activeTab !== 'oven');
+    document.getElementById('analytics-view').classList.toggle('active', state.activeTab === 'analytics');
+
+    if (state.activeTab === 'analytics') renderAnalytics();
+    if (state.activeTab === 'oven') renderOven();
+  }
+
   document.querySelectorAll('.tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      state.activeTab = tab.dataset.tab;
-
-      document.getElementById('schedule-view').classList.toggle('hidden', state.activeTab !== 'schedule');
-      document.getElementById('oven-view').classList.toggle('hidden', state.activeTab !== 'oven');
-      document.getElementById('analytics-view').classList.toggle('active', state.activeTab === 'analytics');
-
-      if (state.activeTab === 'analytics') renderAnalytics();
-      if (state.activeTab === 'oven') renderOven();
+    tab.addEventListener('click', () => activateTab(tab));
+    tab.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        activateTab(tab);
+      }
     });
   });
 }
