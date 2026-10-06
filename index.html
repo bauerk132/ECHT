@@ -1500,6 +1500,7 @@ function renderOven() {
   buildGrid('oven-grid-container', 'oven-grid', renderOvenBlocks);
   const conflicts = getOvenConflictIds();
   document.getElementById('oven-conflict-banner').classList.toggle('visible', conflicts.size > 0);
+  updateCategoryCounts();
 }
 
 function renderOvenBlocks(grid) {
@@ -2128,11 +2129,14 @@ function buildCategoryList() {
 }
 
 function updateCategoryCounts() {
+  // ⚡ Bolt: Single O(N) pass to count categories, avoiding O(C * N) array filtering
+  const counts = {};
+  state.tasks.forEach(t => counts[t.category] = (counts[t.category] || 0) + 1);
+  state.ovenBlocks.forEach(b => counts[b.category] = (counts[b.category] || 0) + 1);
+
   CATEGORIES.forEach(c => {
-    const count = state.tasks.filter(t => t.category === c.id).length
-                + state.ovenBlocks.filter(b => b.category === c.id).length;
     const el = document.getElementById(`cat-count-${c.id}`);
-    if (el) el.textContent = count || '';
+    if (el) el.textContent = counts[c.id] || '';
   });
 }
 
