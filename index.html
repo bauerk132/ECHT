@@ -1301,9 +1301,12 @@ function blocksOverlap(a, b) {
 }
 
 function hasOvenConflict() {
-  const ob = state.ovenBlocks;
+  // ⚡ Bolt: Pre-sort elements by day and startSlot to allow early short-circuiting
+  // and prevent O(N^2) bottlenecks when rendering the grid with many blocks.
+  const ob = [...state.ovenBlocks].sort((a, b) => a.day - b.day || a.startSlot - b.startSlot);
   for (let i = 0; i < ob.length; i++) {
     for (let j = i + 1; j < ob.length; j++) {
+      if (ob[j].day > ob[i].day || ob[j].startSlot >= ob[i].endSlot) break;
       if (blocksOverlap(ob[i], ob[j])) return true;
     }
   }
@@ -1311,9 +1314,11 @@ function hasOvenConflict() {
 }
 
 function hasScheduleConflict() {
-  const active = state.tasks.filter(t => !t.passive);
+  // ⚡ Bolt: Pre-sort active tasks to short-circuit the inner loop, changing O(N^2) to near O(N).
+  const active = state.tasks.filter(t => !t.passive).sort((a, b) => a.day - b.day || a.startSlot - b.startSlot);
   for (let i = 0; i < active.length; i++) {
     for (let j = i + 1; j < active.length; j++) {
+      if (active[j].day > active[i].day || active[j].startSlot >= active[i].endSlot) break;
       if (blocksOverlap(active[i], active[j])) return true;
     }
   }
@@ -1321,10 +1326,12 @@ function hasScheduleConflict() {
 }
 
 function getOvenConflictIds() {
+  // ⚡ Bolt: Optimized overlap extraction to avoid full O(N^2) iteration over all blocks.
   const conflicts = new Set();
-  const ob = state.ovenBlocks;
+  const ob = [...state.ovenBlocks].sort((a, b) => a.day - b.day || a.startSlot - b.startSlot);
   for (let i = 0; i < ob.length; i++) {
     for (let j = i + 1; j < ob.length; j++) {
+      if (ob[j].day > ob[i].day || ob[j].startSlot >= ob[i].endSlot) break;
       if (blocksOverlap(ob[i], ob[j])) {
         conflicts.add(ob[i].id);
         conflicts.add(ob[j].id);
