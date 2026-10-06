@@ -1033,10 +1033,10 @@
         </div>
 
         <div class="toggle-row">
-          <div>
+          <label for="qa-passive" style="cursor: pointer;">
             <div class="toggle-label">Passive / Waiting</div>
             <div class="toggle-sub">Can overlap other tasks</div>
-          </div>
+          </label>
           <label class="toggle-switch">
           <input type="checkbox" id="qa-passive" aria-label="Passive / Waiting">
             <span class="toggle-slider"></span>
@@ -1826,10 +1826,10 @@ function openEditModal(task) {
         <textarea class="form-textarea" id="edit-notes">${escHtml(task.notes || '')}</textarea>
       </div>
       <div class="toggle-row">
-        <div>
+        <label for="edit-passive" style="cursor: pointer;">
           <div class="toggle-label">Passive / Waiting</div>
           <div class="toggle-sub">Can overlap other tasks</div>
-        </div>
+        </label>
         <label class="toggle-switch">
           <input type="checkbox" id="edit-passive" aria-label="Passive / Waiting" ${task.passive ? 'checked' : ''}>
           <span class="toggle-slider"></span>
