@@ -371,6 +371,7 @@
   /* ─── SCHEDULE GRID ─────────────────────────────────────────────────── */
   .schedule-view {
     flex: 1;
+    position: relative;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -588,6 +589,7 @@
   /* ─── OVEN TRACKER ──────────────────────────────────────────────────── */
   .oven-view {
     flex: 1;
+    position: relative;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -1112,6 +1114,11 @@
       <div class="grid-container" id="schedule-grid-container">
         <div class="schedule-grid" id="schedule-grid"></div>
       </div>
+      <div class="empty-state" id="schedule-empty-state" style="display: none;">
+        <div class="empty-state-icon" aria-hidden="true">📋</div>
+        <div class="empty-state-text">No tasks scheduled</div>
+        <div style="font-size: 11px; margin-top: 8px; color: var(--echt-tan); letter-spacing: 0.05em;">Click any time slot to add</div>
+      </div>
     </div>
 
     <!-- ── OVEN VIEW ─────────────────────────────────────────────────── -->
@@ -1134,6 +1141,11 @@
       </div>
       <div class="oven-grid-container" id="oven-grid-container">
         <div class="oven-grid" id="oven-grid"></div>
+      </div>
+      <div class="empty-state" id="oven-empty-state" style="display: none;">
+        <div class="empty-state-icon" aria-hidden="true">🔥</div>
+        <div class="empty-state-text">Oven is empty</div>
+        <div style="font-size: 11px; margin-top: 8px; color: var(--echt-tan); letter-spacing: 0.05em;">Click any time slot to schedule</div>
       </div>
     </div>
 
@@ -1424,6 +1436,7 @@ function updateNowLine(grid) {
 function renderSchedule() {
   buildGrid('schedule-grid-container', 'schedule-grid', renderTaskBlocks);
   document.getElementById('schedule-conflict-banner').classList.toggle('visible', hasScheduleConflict());
+  document.getElementById('schedule-empty-state').style.display = state.tasks.length === 0 ? 'flex' : 'none';
   updateCategoryCounts();
 }
 
@@ -1500,6 +1513,7 @@ function renderOven() {
   buildGrid('oven-grid-container', 'oven-grid', renderOvenBlocks);
   const conflicts = getOvenConflictIds();
   document.getElementById('oven-conflict-banner').classList.toggle('visible', conflicts.size > 0);
+  document.getElementById('oven-empty-state').style.display = state.ovenBlocks.length === 0 ? 'flex' : 'none';
 }
 
 function renderOvenBlocks(grid) {
