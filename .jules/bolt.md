@@ -9,3 +9,6 @@
 ## 2023-10-26 - O(N^2) Interval Overlap Bottlenecks
 **Learning:** Checking for overlapping blocks (tasks, oven) using nested loops inherently becomes an O(N^2) bottleneck and drastically degrades grid rendering performance when element count increases.
 **Action:** When validating schedules or extracting conflicts, pre-sort the list sequences by sequential attributes (e.g. `day` then `startSlot`). This converts the outer lookup into O(N log N) and allows the inner loops to safely short-circuit with a `break` once target sequence conditions bounds are exceeded, optimizing the validation close to O(N).
+## 2024-05-24 - Pre-aggregating data before UI updates
+**Learning:** In vanilla JS applications without frameworks like React, performing O(C*N) lookups (like iterating through large arrays inside a `.forEach()` loop) directly before DOM updates causes unnecessary main-thread blocking, which can slow down responsiveness, especially when these functions are called often (like during render cycles or form interactions).
+**Action:** Always pre-aggregate data in a single O(N) pass using a hash map or object before mapping the totals to the UI elements. This changes the complexity to O(N + C), making renders noticeably faster and preserving UI snappiness.
