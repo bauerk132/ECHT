@@ -2150,13 +2150,17 @@ function buildDaySelectors() {
 function buildDaySelector(containerId, defaultDay, onChange) {
   const container = document.getElementById(containerId);
   container.innerHTML = DAYS.map((d, i) => `
-    <div class="day-btn ${i === defaultDay ? 'selected' : ''}" data-day="${i}">${d}</div>
+    <button type="button" class="day-btn ${i === defaultDay ? 'selected' : ''}" data-day="${i}" aria-pressed="${i === defaultDay}">${d}</button>
   `).join('');
 
   container.querySelectorAll('.day-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      container.querySelectorAll('.day-btn').forEach(b => b.classList.remove('selected'));
+      container.querySelectorAll('.day-btn').forEach(b => {
+        b.classList.remove('selected');
+        b.setAttribute('aria-pressed', 'false');
+      });
       btn.classList.add('selected');
+      btn.setAttribute('aria-pressed', 'true');
       onChange(parseInt(btn.dataset.day));
     });
   });
@@ -2165,7 +2169,9 @@ function buildDaySelector(containerId, defaultDay, onChange) {
 function updateDaySelector(containerId, day) {
   const container = document.getElementById(containerId);
   container.querySelectorAll('.day-btn').forEach(btn => {
-    btn.classList.toggle('selected', parseInt(btn.dataset.day) === day);
+    const isSelected = parseInt(btn.dataset.day) === day;
+    btn.classList.toggle('selected', isSelected);
+    btn.setAttribute('aria-pressed', isSelected);
   });
 }
 
