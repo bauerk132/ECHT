@@ -5,3 +5,6 @@
 ## 2024-05-18 - Clickable Toggle Labels
 **Learning:** Custom UI toggle switches often implement their descriptive text alongside the actual input but fail to link them semantically. Using a standard `<label for="[id]">` wrapper around the text ensures it becomes clickable, expanding the hit area and significantly improving accessibility and UX without requiring Javascript event handlers.
 **Action:** Always wrap descriptive text for custom checkboxes or toggles in a `<label>` linked by `for` attribute to the input `id`.
+## 2023-10-27 - Semantic Form Labels
+**Learning:** In the vanilla HTML application, standard input forms (Quick Add, Oven Block, Edit Modals) were using `div.form-label` instead of semantic `<label>` elements. This breaks screen reader association and reduces the clickable hit area for inputs.
+**Action:** Always wrap form descriptive text in a semantic `<label class="form-label" for="...">` tag linked to the input's `id`. This ensures the text is clickable, improving usability and expanding the hit area without needing JS event handlers.
