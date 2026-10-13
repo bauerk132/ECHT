@@ -1002,12 +1002,12 @@
       <div class="add-form" id="quick-add-form">
 
         <div class="form-row">
-          <div class="form-label">Task Name</div>
+          <label class="form-label" for="qa-name">Task Name</label>
           <input class="form-input" id="qa-name" placeholder="e.g. Laminate dough" />
         </div>
 
         <div class="form-row">
-          <div class="form-label">Category</div>
+          <label class="form-label" for="qa-category">Category</label>
           <select class="form-select" id="qa-category"></select>
         </div>
 
@@ -1018,17 +1018,17 @@
 
         <div class="time-row">
           <div class="form-row">
-            <div class="form-label">Start</div>
+            <label class="form-label" for="qa-start">Start</label>
             <input class="form-input" id="qa-start" type="time" value="06:00" />
           </div>
           <div class="form-row">
-            <div class="form-label">End</div>
+            <label class="form-label" for="qa-end">End</label>
             <input class="form-input" id="qa-end" type="time" value="07:00" />
           </div>
         </div>
 
         <div class="form-row">
-          <div class="form-label">Notes</div>
+          <label class="form-label" for="qa-notes">Notes</label>
           <textarea class="form-textarea" id="qa-notes" placeholder="Temp, hydration, notes…"></textarea>
         </div>
 
@@ -1053,12 +1053,12 @@
       <div class="add-form">
 
         <div class="form-row">
-          <div class="form-label">Item</div>
+          <label class="form-label" for="ov-name">Item</label>
           <input class="form-input" id="ov-name" placeholder="e.g. Croissants — Bake" />
         </div>
 
         <div class="form-row">
-          <div class="form-label">Category</div>
+          <label class="form-label" for="ov-category">Category</label>
           <select class="form-select" id="ov-category"></select>
         </div>
 
@@ -1069,22 +1069,22 @@
 
         <div class="time-row">
           <div class="form-row">
-            <div class="form-label">Start</div>
+            <label class="form-label" for="ov-start">Start</label>
             <input class="form-input" id="ov-start" type="time" value="06:00" />
           </div>
           <div class="form-row">
-            <div class="form-label">End</div>
+            <label class="form-label" for="ov-end">End</label>
             <input class="form-input" id="ov-end" type="time" value="07:00" />
           </div>
         </div>
 
         <div class="form-row">
-          <div class="form-label">Temp (°F)</div>
+          <label class="form-label" for="ov-temp">Temp (°F)</label>
           <input class="form-input" id="ov-temp" type="number" placeholder="375" min="200" max="600" />
         </div>
 
         <div class="form-row">
-          <div class="form-label">Notes</div>
+          <label class="form-label" for="ov-notes">Notes</label>
           <textarea class="form-textarea" id="ov-notes" placeholder="Steam, rack position…"></textarea>
         </div>
 
@@ -1800,29 +1800,29 @@ function openEditModal(task) {
   document.getElementById('modal-body').innerHTML = `
     <div class="add-form">
       <div class="form-row">
-        <div class="form-label">Task Name</div>
+        <label class="form-label" for="edit-name">Task Name</label>
         <input class="form-input" id="edit-name" value="${escHtml(task.name)}" />
       </div>
       <div class="form-row">
-        <div class="form-label">Category</div>
+        <label class="form-label" for="edit-cat">Category</label>
         <select class="form-select" id="edit-cat">${catOptions}</select>
       </div>
       <div class="form-row">
-        <div class="form-label">Day</div>
+        <label class="form-label" for="edit-day">Day</label>
         <select class="form-select" id="edit-day">${dayOptions}</select>
       </div>
       <div class="time-row">
         <div class="form-row">
-          <div class="form-label">Start</div>
+          <label class="form-label" for="edit-start">Start</label>
           <input class="form-input" id="edit-start" type="time" value="${slotToTime(task.startSlot)}" />
         </div>
         <div class="form-row">
-          <div class="form-label">End</div>
+          <label class="form-label" for="edit-end">End</label>
           <input class="form-input" id="edit-end" type="time" value="${slotToTime(task.endSlot)}" />
         </div>
       </div>
       <div class="form-row">
-        <div class="form-label">Notes</div>
+        <label class="form-label" for="edit-notes">Notes</label>
         <textarea class="form-textarea" id="edit-notes">${escHtml(task.notes || '')}</textarea>
       </div>
       <div class="toggle-row">
@@ -1884,33 +1884,33 @@ function openEditOvenModal(block) {
   document.getElementById('modal-body').innerHTML = `
     <div class="add-form">
       <div class="form-row">
-        <div class="form-label">Item</div>
+        <label class="form-label" for="edit-ov-name">Item</label>
         <input class="form-input" id="edit-ov-name" value="${escHtml(block.name)}" />
       </div>
       <div class="form-row">
-        <div class="form-label">Category</div>
+        <label class="form-label" for="edit-ov-cat">Category</label>
         <select class="form-select" id="edit-ov-cat">${catOptions}</select>
       </div>
       <div class="form-row">
-        <div class="form-label">Day</div>
+        <label class="form-label" for="edit-ov-day">Day</label>
         <select class="form-select" id="edit-ov-day">${dayOptions}</select>
       </div>
       <div class="time-row">
         <div class="form-row">
-          <div class="form-label">Start</div>
+          <label class="form-label" for="edit-ov-start">Start</label>
           <input class="form-input" id="edit-ov-start" type="time" value="${slotToTime(block.startSlot)}" />
         </div>
         <div class="form-row">
-          <div class="form-label">End</div>
+          <label class="form-label" for="edit-ov-end">End</label>
           <input class="form-input" id="edit-ov-end" type="time" value="${slotToTime(block.endSlot)}" />
         </div>
       </div>
       <div class="form-row">
-        <div class="form-label">Temp (°F)</div>
+        <label class="form-label" for="edit-ov-temp">Temp (°F)</label>
         <input class="form-input" id="edit-ov-temp" type="number" value="${block.temp || ''}" placeholder="375" />
       </div>
       <div class="form-row">
-        <div class="form-label">Notes</div>
+        <label class="form-label" for="edit-ov-notes">Notes</label>
         <textarea class="form-textarea" id="edit-ov-notes">${escHtml(block.notes || '')}</textarea>
       </div>
     </div>
@@ -2150,13 +2150,17 @@ function buildDaySelectors() {
 function buildDaySelector(containerId, defaultDay, onChange) {
   const container = document.getElementById(containerId);
   container.innerHTML = DAYS.map((d, i) => `
-    <div class="day-btn ${i === defaultDay ? 'selected' : ''}" data-day="${i}">${d}</div>
+    <button type="button" class="day-btn ${i === defaultDay ? 'selected' : ''}" data-day="${i}" aria-pressed="${i === defaultDay ? 'true' : 'false'}">${d}</button>
   `).join('');
 
   container.querySelectorAll('.day-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      container.querySelectorAll('.day-btn').forEach(b => b.classList.remove('selected'));
+      container.querySelectorAll('.day-btn').forEach(b => {
+        b.classList.remove('selected');
+        b.setAttribute('aria-pressed', 'false');
+      });
       btn.classList.add('selected');
+      btn.setAttribute('aria-pressed', 'true');
       onChange(parseInt(btn.dataset.day));
     });
   });
@@ -2165,7 +2169,9 @@ function buildDaySelector(containerId, defaultDay, onChange) {
 function updateDaySelector(containerId, day) {
   const container = document.getElementById(containerId);
   container.querySelectorAll('.day-btn').forEach(btn => {
-    btn.classList.toggle('selected', parseInt(btn.dataset.day) === day);
+    const isSelected = parseInt(btn.dataset.day) === day;
+    btn.classList.toggle('selected', isSelected);
+    btn.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
   });
 }
 
