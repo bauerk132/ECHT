@@ -2128,11 +2128,23 @@ function buildCategoryList() {
 }
 
 function updateCategoryCounts() {
+  // ⚡ Bolt: Avoid O(C*N) bottlenecks in vanilla JS render loops by pre-aggregating data in an O(N) pass.
+  const counts = {};
+  const tasks = state.tasks;
+  const ovenBlocks = state.ovenBlocks;
+
+  for (let i = 0, len = tasks.length; i < len; i++) {
+    const cat = tasks[i].category;
+    counts[cat] = (counts[cat] || 0) + 1;
+  }
+  for (let i = 0, len = ovenBlocks.length; i < len; i++) {
+    const cat = ovenBlocks[i].category;
+    counts[cat] = (counts[cat] || 0) + 1;
+  }
+
   CATEGORIES.forEach(c => {
-    const count = state.tasks.filter(t => t.category === c.id).length
-                + state.ovenBlocks.filter(b => b.category === c.id).length;
     const el = document.getElementById(`cat-count-${c.id}`);
-    if (el) el.textContent = count || '';
+    if (el) el.textContent = counts[c.id] || '';
   });
 }
 
