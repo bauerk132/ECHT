@@ -2128,9 +2128,22 @@ function buildCategoryList() {
 }
 
 function updateCategoryCounts() {
+  // ⚡ Bolt: Single O(N) pass to pre-aggregate counts instead of O(C*N) .filter() inside .forEach()
+  const counts = {};
+  const tasksLen = state.tasks.length;
+  for (let i = 0; i < tasksLen; i++) {
+    const cat = state.tasks[i].category;
+    counts[cat] = (counts[cat] || 0) + 1;
+  }
+
+  const ovenLen = state.ovenBlocks.length;
+  for (let i = 0; i < ovenLen; i++) {
+    const cat = state.ovenBlocks[i].category;
+    counts[cat] = (counts[cat] || 0) + 1;
+  }
+
   CATEGORIES.forEach(c => {
-    const count = state.tasks.filter(t => t.category === c.id).length
-                + state.ovenBlocks.filter(b => b.category === c.id).length;
+    const count = counts[c.id] || 0;
     const el = document.getElementById(`cat-count-${c.id}`);
     if (el) el.textContent = count || '';
   });
