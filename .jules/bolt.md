@@ -9,3 +9,7 @@
 ## 2023-10-26 - O(N^2) Interval Overlap Bottlenecks
 **Learning:** Checking for overlapping blocks (tasks, oven) using nested loops inherently becomes an O(N^2) bottleneck and drastically degrades grid rendering performance when element count increases.
 **Action:** When validating schedules or extracting conflicts, pre-sort the list sequences by sequential attributes (e.g. `day` then `startSlot`). This converts the outer lookup into O(N log N) and allows the inner loops to safely short-circuit with a `break` once target sequence conditions bounds are exceeded, optimizing the validation close to O(N).
+
+## 2024-10-16 - O(C*N) bottlenecks in render loops
+**Learning:** Avoid using `.filter()` inside a `.forEach()` loop to compute stats like category counts dynamically during render cycles, as this leads to an O(C*N) complexity. At larger data scales, this causes noticeable layout thrashing and performance lag, especially if triggered frequently by UI updates or `setInterval`.
+**Action:** Pre-aggregate data using a single O(N) pass to populate an object or map, then update the UI nodes in a separate loop. Prefer traditional `for` loops (e.g., `for (let i = 0, len = arr.length; i < len; i++)`) for the aggregation pass to avoid JIT overhead and maximize performance at large scale.
