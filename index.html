@@ -361,6 +361,8 @@
     text-transform: uppercase;
     color: var(--echt-tan);
     cursor: pointer;
+    background: transparent;
+    border: none;
     border-bottom: 2px solid transparent;
     transition: all 0.15s;
     white-space: nowrap;
@@ -1098,10 +1100,10 @@
   <main id="main">
 
     <!-- Tab bar -->
-    <div class="tab-bar">
-      <div class="tab active" data-tab="schedule">Weekly Schedule</div>
-      <div class="tab" data-tab="oven">Oven Tracker</div>
-      <div class="tab" data-tab="analytics">Analytics</div>
+    <div class="tab-bar" role="tablist" aria-label="Views">
+      <button type="button" class="tab active" data-tab="schedule" role="tab" aria-selected="true" aria-controls="schedule-view">Weekly Schedule</button>
+      <button type="button" class="tab" data-tab="oven" role="tab" aria-selected="false" aria-controls="oven-view">Oven Tracker</button>
+      <button type="button" class="tab" data-tab="analytics" role="tab" aria-selected="false" aria-controls="analytics-view">Analytics</button>
     </div>
 
     <!-- ── SCHEDULE VIEW ─────────────────────────────────────────────── -->
@@ -2220,8 +2222,12 @@ function setupQuickAdd() {
 function setupTabs() {
   document.querySelectorAll('.tab').forEach(tab => {
     tab.addEventListener('click', () => {
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab').forEach(t => {
+        t.classList.remove('active');
+        t.setAttribute('aria-selected', 'false');
+      });
       tab.classList.add('active');
+      tab.setAttribute('aria-selected', 'true');
       state.activeTab = tab.dataset.tab;
 
       document.getElementById('schedule-view').classList.toggle('hidden', state.activeTab !== 'schedule');
