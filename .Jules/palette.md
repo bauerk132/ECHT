@@ -5,3 +5,7 @@
 ## 2024-05-18 - Clickable Toggle Labels
 **Learning:** Custom UI toggle switches often implement their descriptive text alongside the actual input but fail to link them semantically. Using a standard `<label for="[id]">` wrapper around the text ensures it becomes clickable, expanding the hit area and significantly improving accessibility and UX without requiring Javascript event handlers.
 **Action:** Always wrap descriptive text for custom checkboxes or toggles in a `<label>` linked by `for` attribute to the input `id`.
+
+## 2024-10-17 - Button Resets for Custom Interactive UI Elements
+**Learning:** When creating custom interactive UI elements like toggle groups or selectors in vanilla HTML, changing `<div>` tags to native semantic `<button type="button">` elements provides excellent out-of-the-box keyboard accessibility (Tab focus and Enter/Space activation). However, doing so will introduce default browser button styling (background, border, padding) that can break the visual design. Always remember to add explicit CSS resets (e.g., `background: transparent; border: none;`) to maintain visual equivalence while gaining semantic accessibility.
+**Action:** Whenever converting an interactive `<div>` to a `<button>`, verify its CSS and add necessary style resets to preserve the original visual appearance.
