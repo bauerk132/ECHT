@@ -2128,9 +2128,20 @@ function buildCategoryList() {
 }
 
 function updateCategoryCounts() {
+  // ⚡ Bolt: Prevent O(C*N) performance bottleneck by pre-aggregating
+  // counts in a single O(N) pass rather than filtering per category.
+  const counts = {};
+  for (let i = 0, len = state.tasks.length; i < len; i++) {
+    const cat = state.tasks[i].category;
+    counts[cat] = (counts[cat] || 0) + 1;
+  }
+  for (let i = 0, len = state.ovenBlocks.length; i < len; i++) {
+    const cat = state.ovenBlocks[i].category;
+    counts[cat] = (counts[cat] || 0) + 1;
+  }
+
   CATEGORIES.forEach(c => {
-    const count = state.tasks.filter(t => t.category === c.id).length
-                + state.ovenBlocks.filter(b => b.category === c.id).length;
+    const count = counts[c.id] || 0;
     const el = document.getElementById(`cat-count-${c.id}`);
     if (el) el.textContent = count || '';
   });
