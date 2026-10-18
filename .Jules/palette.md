@@ -5,3 +5,7 @@
 ## 2024-05-18 - Clickable Toggle Labels
 **Learning:** Custom UI toggle switches often implement their descriptive text alongside the actual input but fail to link them semantically. Using a standard `<label for="[id]">` wrapper around the text ensures it becomes clickable, expanding the hit area and significantly improving accessibility and UX without requiring Javascript event handlers.
 **Action:** Always wrap descriptive text for custom checkboxes or toggles in a `<label>` linked by `for` attribute to the input `id`.
+
+## 2024-10-24 - Interactive Tab & Single-select Accessibility
+**Learning:** Custom interactive UI elements (like tab groups or day selectors) are often built with standard `<div>` elements and click handlers. However, `<div>`s are inaccessible out-of-the-box for keyboard users and don't announce their roles correctly for screen readers. Swapping these for native semantic `<button type="button">` elements provides immediate keyboard support (Tab focus, Space/Enter interaction). Furthermore, a complete implementation requires maintaining correct aria state: single-select toggles (like day selectors) should use `aria-pressed="true/false"`, while tab interfaces need `role="tab"` and `aria-selected="true/false"`.
+**Action:** When creating or updating custom tabs or single-select buttons, use `<button type="button">` elements and implement JavaScript handlers to sync `aria-selected` or `aria-pressed` states alongside visual active states.
