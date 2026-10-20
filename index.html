@@ -354,6 +354,8 @@
   }
 
   .tab {
+    background: transparent;
+    border: none;
     padding: 10px 20px;
     font-family: var(--font-mono);
     font-size: 10px;
@@ -1098,10 +1100,10 @@
   <main id="main">
 
     <!-- Tab bar -->
-    <div class="tab-bar">
-      <div class="tab active" data-tab="schedule">Weekly Schedule</div>
-      <div class="tab" data-tab="oven">Oven Tracker</div>
-      <div class="tab" data-tab="analytics">Analytics</div>
+    <div class="tab-bar" role="tablist">
+      <button type="button" class="tab active" data-tab="schedule" role="tab" aria-selected="true">Weekly Schedule</button>
+      <button type="button" class="tab" data-tab="oven" role="tab" aria-selected="false">Oven Tracker</button>
+      <button type="button" class="tab" data-tab="analytics" role="tab" aria-selected="false">Analytics</button>
     </div>
 
     <!-- ── SCHEDULE VIEW ─────────────────────────────────────────────── -->
@@ -2150,13 +2152,17 @@ function buildDaySelectors() {
 function buildDaySelector(containerId, defaultDay, onChange) {
   const container = document.getElementById(containerId);
   container.innerHTML = DAYS.map((d, i) => `
-    <div class="day-btn ${i === defaultDay ? 'selected' : ''}" data-day="${i}">${d}</div>
+    <button type="button" class="day-btn ${i === defaultDay ? 'selected' : ''}" data-day="${i}" aria-pressed="${i === defaultDay}">${d}</button>
   `).join('');
 
   container.querySelectorAll('.day-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      container.querySelectorAll('.day-btn').forEach(b => b.classList.remove('selected'));
+      container.querySelectorAll('.day-btn').forEach(b => {
+        b.classList.remove('selected');
+        b.setAttribute('aria-pressed', 'false');
+      });
       btn.classList.add('selected');
+      btn.setAttribute('aria-pressed', 'true');
       onChange(parseInt(btn.dataset.day));
     });
   });
@@ -2165,7 +2171,9 @@ function buildDaySelector(containerId, defaultDay, onChange) {
 function updateDaySelector(containerId, day) {
   const container = document.getElementById(containerId);
   container.querySelectorAll('.day-btn').forEach(btn => {
-    btn.classList.toggle('selected', parseInt(btn.dataset.day) === day);
+    const isSelected = parseInt(btn.dataset.day) === day;
+    btn.classList.toggle('selected', isSelected);
+    btn.setAttribute('aria-pressed', isSelected.toString());
   });
 }
 
@@ -2220,8 +2228,12 @@ function setupQuickAdd() {
 function setupTabs() {
   document.querySelectorAll('.tab').forEach(tab => {
     tab.addEventListener('click', () => {
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab').forEach(t => {
+        t.classList.remove('active');
+        t.setAttribute('aria-selected', 'false');
+      });
       tab.classList.add('active');
+      tab.setAttribute('aria-selected', 'true');
       state.activeTab = tab.dataset.tab;
 
       document.getElementById('schedule-view').classList.toggle('hidden', state.activeTab !== 'schedule');
