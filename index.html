@@ -1953,11 +1953,20 @@ function renderAnalytics() {
   const tasks = state.tasks;
   const oven = state.ovenBlocks;
 
-  // Stats
-  const totalTaskMin = tasks.reduce((s, t) => s + (t.endSlot - t.startSlot) * 15, 0);
-  const totalOvenMin = oven.reduce((s, b) => s + (b.endSlot - b.startSlot) * 15, 0);
-  const activeMin = tasks.filter(t => !t.passive).reduce((s, t) => s + (t.endSlot - t.startSlot) * 15, 0);
-  const passiveMin = tasks.filter(t => t.passive).reduce((s, t) => s + (t.endSlot - t.startSlot) * 15, 0);
+  // ⚡ Bolt: Calculate stats in single O(N) pass to avoid chained array methods (.filter().reduce())
+  let totalTaskMin = 0;
+  let activeMin = 0;
+  let passiveMin = 0;
+  for (let i = 0, len = tasks.length; i < len; i++) {
+    const duration = (tasks[i].endSlot - tasks[i].startSlot) * 15;
+    totalTaskMin += duration;
+    if (tasks[i].passive) passiveMin += duration;
+    else activeMin += duration;
+  }
+  let totalOvenMin = 0;
+  for (let i = 0, len = oven.length; i < len; i++) {
+    totalOvenMin += (oven[i].endSlot - oven[i].startSlot) * 15;
+  }
 
   const statsGrid = document.getElementById('stats-grid');
   statsGrid.innerHTML = `
