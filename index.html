@@ -320,6 +320,7 @@
     gap: 3px;
   }
   .day-btn {
+    appearance: none;
     background: var(--echt-charcoal);
     border: 1px solid var(--echt-brown);
     color: var(--echt-tan);
@@ -1012,8 +1013,8 @@
         </div>
 
         <div class="form-row">
-          <div class="form-label">Day</div>
-          <div class="day-selector" id="qa-day-selector"></div>
+          <div class="form-label" id="qa-day-label">Day</div>
+          <div class="day-selector" id="qa-day-selector" role="group" aria-labelledby="qa-day-label"></div>
         </div>
 
         <div class="time-row">
@@ -1063,8 +1064,8 @@
         </div>
 
         <div class="form-row">
-          <div class="form-label">Day</div>
-          <div class="day-selector" id="ov-day-selector"></div>
+          <div class="form-label" id="ov-day-label">Day</div>
+          <div class="day-selector" id="ov-day-selector" role="group" aria-labelledby="ov-day-label"></div>
         </div>
 
         <div class="time-row">
@@ -2150,13 +2151,17 @@ function buildDaySelectors() {
 function buildDaySelector(containerId, defaultDay, onChange) {
   const container = document.getElementById(containerId);
   container.innerHTML = DAYS.map((d, i) => `
-    <div class="day-btn ${i === defaultDay ? 'selected' : ''}" data-day="${i}">${d}</div>
+    <button type="button" class="day-btn ${i === defaultDay ? 'selected' : ''}" data-day="${i}" aria-pressed="${i === defaultDay ? 'true' : 'false'}">${d}</button>
   `).join('');
 
   container.querySelectorAll('.day-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      container.querySelectorAll('.day-btn').forEach(b => b.classList.remove('selected'));
+      container.querySelectorAll('.day-btn').forEach(b => {
+        b.classList.remove('selected');
+        b.setAttribute('aria-pressed', 'false');
+      });
       btn.classList.add('selected');
+      btn.setAttribute('aria-pressed', 'true');
       onChange(parseInt(btn.dataset.day));
     });
   });
@@ -2165,7 +2170,9 @@ function buildDaySelector(containerId, defaultDay, onChange) {
 function updateDaySelector(containerId, day) {
   const container = document.getElementById(containerId);
   container.querySelectorAll('.day-btn').forEach(btn => {
-    btn.classList.toggle('selected', parseInt(btn.dataset.day) === day);
+    const isSelected = parseInt(btn.dataset.day) === day;
+    btn.classList.toggle('selected', isSelected);
+    btn.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
   });
 }
 
