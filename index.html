@@ -1954,10 +1954,23 @@ function renderAnalytics() {
   const oven = state.ovenBlocks;
 
   // Stats
-  const totalTaskMin = tasks.reduce((s, t) => s + (t.endSlot - t.startSlot) * 15, 0);
-  const totalOvenMin = oven.reduce((s, b) => s + (b.endSlot - b.startSlot) * 15, 0);
-  const activeMin = tasks.filter(t => !t.passive).reduce((s, t) => s + (t.endSlot - t.startSlot) * 15, 0);
-  const passiveMin = tasks.filter(t => t.passive).reduce((s, t) => s + (t.endSlot - t.startSlot) * 15, 0);
+  // Performance optimization: Replaced chained .filter().reduce() with a single O(N) loop to avoid intermediate array allocations and redundant iterations
+  let totalTaskMin = 0;
+  let activeMin = 0;
+  let passiveMin = 0;
+  for (let i = 0, len = tasks.length; i < len; i++) {
+    const t = tasks[i];
+    const dur = (t.endSlot - t.startSlot) * 15;
+    totalTaskMin += dur;
+    if (t.passive) passiveMin += dur;
+    else activeMin += dur;
+  }
+
+  let totalOvenMin = 0;
+  for (let i = 0, len = oven.length; i < len; i++) {
+    const b = oven[i];
+    totalOvenMin += (b.endSlot - b.startSlot) * 15;
+  }
 
   const statsGrid = document.getElementById('stats-grid');
   statsGrid.innerHTML = `
@@ -2034,7 +2047,7 @@ function renderAnalytics() {
   }).join('');
 
   // Insights
-  const insights = generateInsights(tasks, oven, catTotals, ovenByDay);
+  const insights = generateInsights(tasks, oven, catTotals, ovenByDay, totalTaskMin, passiveMin);
   document.getElementById('insights-container').innerHTML = insights.map(ins => `
     <div class="insight-card">
       <div class="insight-title">${ins.title}</div>
@@ -2043,7 +2056,7 @@ function renderAnalytics() {
   `).join('') || '<div style="color:var(--echt-tan);font-size:12px;padding:8px">Add more blocks to generate insights.</div>';
 }
 
-function generateInsights(tasks, oven, catTotals, ovenByDay) {
+function generateInsights(tasks, oven, catTotals, ovenByDay, totalMin, passiveMin) {
   const insights = [];
 
   // Oven conflicts
@@ -2064,8 +2077,6 @@ function generateInsights(tasks, oven, catTotals, ovenByDay) {
   }
 
   // Passive ratio
-  const totalMin = tasks.reduce((s, t) => s + (t.endSlot - t.startSlot) * 15, 0);
-  const passiveMin = tasks.filter(t => t.passive).reduce((s, t) => s + (t.endSlot - t.startSlot) * 15, 0);
   if (totalMin > 0) {
     const ratio = passiveMin / totalMin;
     if (ratio > 0.5) {
