@@ -2128,12 +2128,37 @@ function buildCategoryList() {
 }
 
 function updateCategoryCounts() {
-  CATEGORIES.forEach(c => {
-    const count = state.tasks.filter(t => t.category === c.id).length
-                + state.ovenBlocks.filter(b => b.category === c.id).length;
+  // ⚡ Bolt: Replace O(C*N) filter inside forEach with a single O(N) pass using traditional for loops
+  // to pre-aggregate counts, avoiding redundant array traversals and allocations.
+  const counts = {};
+  const tasks = state.tasks;
+  const tasksLen = tasks.length;
+  for (let i = 0; i < tasksLen; i++) {
+    const cat = tasks[i].category;
+    if (counts[cat]) {
+      counts[cat]++;
+    } else {
+      counts[cat] = 1;
+    }
+  }
+
+  const ovenBlocks = state.ovenBlocks;
+  const ovenLen = ovenBlocks.length;
+  for (let i = 0; i < ovenLen; i++) {
+    const cat = ovenBlocks[i].category;
+    if (counts[cat]) {
+      counts[cat]++;
+    } else {
+      counts[cat] = 1;
+    }
+  }
+
+  for (let i = 0; i < CATEGORIES.length; i++) {
+    const c = CATEGORIES[i];
+    const count = counts[c.id];
     const el = document.getElementById(`cat-count-${c.id}`);
     if (el) el.textContent = count || '';
-  });
+  }
 }
 
 function buildCategorySelects() {
