@@ -9,3 +9,7 @@
 ## 2023-10-26 - O(N^2) Interval Overlap Bottlenecks
 **Learning:** Checking for overlapping blocks (tasks, oven) using nested loops inherently becomes an O(N^2) bottleneck and drastically degrades grid rendering performance when element count increases.
 **Action:** When validating schedules or extracting conflicts, pre-sort the list sequences by sequential attributes (e.g. `day` then `startSlot`). This converts the outer lookup into O(N log N) and allows the inner loops to safely short-circuit with a `break` once target sequence conditions bounds are exceeded, optimizing the validation close to O(N).
+
+## 2023-10-27 - Number Coercion in Storage-backed Sorts
+**Learning:** When sorting or comparing properties that are ultimately sourced from `localStorage` or untyped JSON APIs in vanilla JS, relying on implicit numeric comparisons (like `a.startSlot < b.endSlot` or `a.startSlot - b.startSlot`) can cause subtle sorting and logic bugs if the properties are mistakenly saved as strings.
+**Action:** Always explicitly cast such properties to numbers (e.g., `Number(a.startSlot)`) during sort comparators and boundary checks to guarantee correct evaluation.

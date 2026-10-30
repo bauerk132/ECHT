@@ -1089,23 +1089,38 @@ function computeAll() {
   });
 
   // ── Conflicts
+  // ⚡ Bolt: Group blocks by day and sort by startSlot to safely short-circuit the inner loop without cross-day or sorting bugs.
   const ovenConflicts = [];
-  for (let i = 0; i < oven.length; i++) {
-    for (let j = i+1; j < oven.length; j++) {
-      if (blocksOverlap(oven[i], oven[j])) {
-        ovenConflicts.push({ type: 'oven', a: oven[i], b: oven[j] });
+  const ovenByDayMap = {};
+  oven.forEach(b => { ovenByDayMap[b.day] = ovenByDayMap[b.day] || []; ovenByDayMap[b.day].push(b); });
+
+  Object.values(ovenByDayMap).forEach(dayBlocks => {
+    dayBlocks.sort((a, b) => Number(a.startSlot) - Number(b.startSlot));
+    for (let i = 0; i < dayBlocks.length; i++) {
+      for (let j = i + 1; j < dayBlocks.length; j++) {
+        if (Number(dayBlocks[j].startSlot) >= Number(dayBlocks[i].endSlot)) break;
+        if (blocksOverlap(dayBlocks[i], dayBlocks[j])) {
+          ovenConflicts.push({ type: 'oven', a: dayBlocks[i], b: dayBlocks[j] });
+        }
       }
     }
-  }
+  });
+
   const activeConflicts = [];
-  const activeTasks = tasks.filter(t => !t.passive);
-  for (let i = 0; i < activeTasks.length; i++) {
-    for (let j = i+1; j < activeTasks.length; j++) {
-      if (blocksOverlap(activeTasks[i], activeTasks[j])) {
-        activeConflicts.push({ type: 'active', a: activeTasks[i], b: activeTasks[j] });
+  const activeByDayMap = {};
+  tasks.filter(t => !t.passive).forEach(t => { activeByDayMap[t.day] = activeByDayMap[t.day] || []; activeByDayMap[t.day].push(t); });
+
+  Object.values(activeByDayMap).forEach(dayBlocks => {
+    dayBlocks.sort((a, b) => Number(a.startSlot) - Number(b.startSlot));
+    for (let i = 0; i < dayBlocks.length; i++) {
+      for (let j = i + 1; j < dayBlocks.length; j++) {
+        if (Number(dayBlocks[j].startSlot) >= Number(dayBlocks[i].endSlot)) break;
+        if (blocksOverlap(dayBlocks[i], dayBlocks[j])) {
+          activeConflicts.push({ type: 'active', a: dayBlocks[i], b: dayBlocks[j] });
+        }
       }
     }
-  }
+  });
 
   // ── Conflict density by hour
   const conflictByHour = new Array(24).fill(0);
