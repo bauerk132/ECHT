@@ -1,0 +1,9 @@
+💡 What: Replaces chained `.forEach().filter()` operations in `updateCategoryCounts()` with a single O(N) pre-aggregation pass using standard `for` loops.
+
+🎯 Why: During rapid re-renders on large grid updates, the original nested loop structure introduced an O(C*N) time complexity bottleneck along with garbage collection overhead from creating multiple intermediate filtered arrays. This caused noticeable UI thread stutter on large task schedules.
+
+📊 Impact: Benchmark testing demonstrates a ~1.77x speedup on large datasets (20k items), eliminating the bottleneck without sacrificing layout or correctness.
+
+🔬 Measurement:
+1. Created a Node.js benchmark simulating 20k DOM elements.
+2. Verified visual correctness and rendering behavior utilizing an automated Playwright regression test via Python simulating mocked app state on load.
