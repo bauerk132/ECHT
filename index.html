@@ -1002,33 +1002,33 @@
       <div class="add-form" id="quick-add-form">
 
         <div class="form-row">
-          <div class="form-label">Task Name</div>
+          <label class="form-label" for="qa-name">Task Name</label>
           <input class="form-input" id="qa-name" placeholder="e.g. Laminate dough" />
         </div>
 
         <div class="form-row">
-          <div class="form-label">Category</div>
+          <label class="form-label" for="qa-category">Category</label>
           <select class="form-select" id="qa-category"></select>
         </div>
 
         <div class="form-row">
-          <div class="form-label">Day</div>
-          <div class="day-selector" id="qa-day-selector"></div>
+          <div class="form-label" id="label-qa-day">Day</div>
+          <div class="day-selector" id="qa-day-selector" role="group" aria-labelledby="label-qa-day"></div>
         </div>
 
         <div class="time-row">
           <div class="form-row">
-            <div class="form-label">Start</div>
+            <label class="form-label" for="qa-start">Start</label>
             <input class="form-input" id="qa-start" type="time" value="06:00" />
           </div>
           <div class="form-row">
-            <div class="form-label">End</div>
+            <label class="form-label" for="qa-end">End</label>
             <input class="form-input" id="qa-end" type="time" value="07:00" />
           </div>
         </div>
 
         <div class="form-row">
-          <div class="form-label">Notes</div>
+          <label class="form-label" for="qa-notes">Notes</label>
           <textarea class="form-textarea" id="qa-notes" placeholder="Temp, hydration, notes…"></textarea>
         </div>
 
@@ -1053,38 +1053,38 @@
       <div class="add-form">
 
         <div class="form-row">
-          <div class="form-label">Item</div>
+          <label class="form-label" for="ov-name">Item</label>
           <input class="form-input" id="ov-name" placeholder="e.g. Croissants — Bake" />
         </div>
 
         <div class="form-row">
-          <div class="form-label">Category</div>
+          <label class="form-label" for="ov-category">Category</label>
           <select class="form-select" id="ov-category"></select>
         </div>
 
         <div class="form-row">
-          <div class="form-label">Day</div>
-          <div class="day-selector" id="ov-day-selector"></div>
+          <div class="form-label" id="label-ov-day">Day</div>
+          <div class="day-selector" id="ov-day-selector" role="group" aria-labelledby="label-ov-day"></div>
         </div>
 
         <div class="time-row">
           <div class="form-row">
-            <div class="form-label">Start</div>
+            <label class="form-label" for="ov-start">Start</label>
             <input class="form-input" id="ov-start" type="time" value="06:00" />
           </div>
           <div class="form-row">
-            <div class="form-label">End</div>
+            <label class="form-label" for="ov-end">End</label>
             <input class="form-input" id="ov-end" type="time" value="07:00" />
           </div>
         </div>
 
         <div class="form-row">
-          <div class="form-label">Temp (°F)</div>
+          <label class="form-label" for="ov-temp">Temp (°F)</label>
           <input class="form-input" id="ov-temp" type="number" placeholder="375" min="200" max="600" />
         </div>
 
         <div class="form-row">
-          <div class="form-label">Notes</div>
+          <label class="form-label" for="ov-notes">Notes</label>
           <textarea class="form-textarea" id="ov-notes" placeholder="Steam, rack position…"></textarea>
         </div>
 
