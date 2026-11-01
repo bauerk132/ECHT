@@ -5,3 +5,7 @@
 ## 2024-05-18 - Clickable Toggle Labels
 **Learning:** Custom UI toggle switches often implement their descriptive text alongside the actual input but fail to link them semantically. Using a standard `<label for="[id]">` wrapper around the text ensures it becomes clickable, expanding the hit area and significantly improving accessibility and UX without requiring Javascript event handlers.
 **Action:** Always wrap descriptive text for custom checkboxes or toggles in a `<label>` linked by `for` attribute to the input `id`.
+
+## 2024-05-18 - Semantic Labels in Vanilla Forms
+**Learning:** This app heavily uses `<div class="form-label">` for standard text inputs and custom groups (like `.day-selector`), hindering click-to-focus and screen reader operability.
+**Action:** Always replace `<div class="form-label">` with `<label class="form-label" for="...">` for native inputs. For custom groups without a single native input (like button groups), assign an `id` to the label and use `role="group"` and `aria-labelledby="[label-id]"` on the container.
