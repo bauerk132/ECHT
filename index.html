@@ -1954,10 +1954,22 @@ function renderAnalytics() {
   const oven = state.ovenBlocks;
 
   // Stats
-  const totalTaskMin = tasks.reduce((s, t) => s + (t.endSlot - t.startSlot) * 15, 0);
-  const totalOvenMin = oven.reduce((s, b) => s + (b.endSlot - b.startSlot) * 15, 0);
-  const activeMin = tasks.filter(t => !t.passive).reduce((s, t) => s + (t.endSlot - t.startSlot) * 15, 0);
-  const passiveMin = tasks.filter(t => t.passive).reduce((s, t) => s + (t.endSlot - t.startSlot) * 15, 0);
+  // ⚡ Bolt: Single-pass pre-aggregation for task and oven metrics instead of O(C*N) filter/reduce chains
+  let totalTaskMin = 0;
+  let activeMin = 0;
+  let passiveMin = 0;
+  for (let i = 0, len = tasks.length; i < len; i++) {
+    const t = tasks[i];
+    const dur = (t.endSlot - t.startSlot) * 15;
+    totalTaskMin += dur;
+    if (t.passive) passiveMin += dur;
+    else activeMin += dur;
+  }
+
+  let totalOvenMin = 0;
+  for (let i = 0, len = oven.length; i < len; i++) {
+    totalOvenMin += (oven[i].endSlot - oven[i].startSlot) * 15;
+  }
 
   const statsGrid = document.getElementById('stats-grid');
   statsGrid.innerHTML = `
@@ -2034,7 +2046,7 @@ function renderAnalytics() {
   }).join('');
 
   // Insights
-  const insights = generateInsights(tasks, oven, catTotals, ovenByDay);
+  const insights = generateInsights(tasks, oven, catTotals, ovenByDay, totalTaskMin, passiveMin);
   document.getElementById('insights-container').innerHTML = insights.map(ins => `
     <div class="insight-card">
       <div class="insight-title">${ins.title}</div>
@@ -2043,7 +2055,7 @@ function renderAnalytics() {
   `).join('') || '<div style="color:var(--echt-tan);font-size:12px;padding:8px">Add more blocks to generate insights.</div>';
 }
 
-function generateInsights(tasks, oven, catTotals, ovenByDay) {
+function generateInsights(tasks, oven, catTotals, ovenByDay, totalTaskMin, passiveMin) {
   const insights = [];
 
   // Oven conflicts
@@ -2064,16 +2076,15 @@ function generateInsights(tasks, oven, catTotals, ovenByDay) {
   }
 
   // Passive ratio
-  const totalMin = tasks.reduce((s, t) => s + (t.endSlot - t.startSlot) * 15, 0);
-  const passiveMin = tasks.filter(t => t.passive).reduce((s, t) => s + (t.endSlot - t.startSlot) * 15, 0);
-  if (totalMin > 0) {
-    const ratio = passiveMin / totalMin;
+  // ⚡ Bolt: totalTaskMin and passiveMin are passed directly after being pre-aggregated in renderAnalytics
+  if (totalTaskMin > 0) {
+    const ratio = passiveMin / totalTaskMin;
     if (ratio > 0.5) {
       insights.push({
         title: 'High Passive Time',
         text: `${Math.round(ratio * 100)}% of your scheduled time is passive (proofing, resting, cooling). That's good — it means you have room to stack active tasks during those windows. Check for gaps where the oven could be running.`
       });
-    } else if (ratio < 0.2 && totalMin > 120) {
+    } else if (ratio < 0.2 && totalTaskMin > 120) {
       insights.push({
         title: 'Dense Active Schedule',
         text: `Only ${Math.round(ratio * 100)}% of your time is passive. Your schedule is hands-on heavy — make sure you're accounting for dough rest times and cooling windows.`
@@ -2128,12 +2139,23 @@ function buildCategoryList() {
 }
 
 function updateCategoryCounts() {
-  CATEGORIES.forEach(c => {
-    const count = state.tasks.filter(t => t.category === c.id).length
-                + state.ovenBlocks.filter(b => b.category === c.id).length;
+  // ⚡ Bolt: Use a single O(N) pass to pre-aggregate category counts
+  // instead of O(C*N) nested filter loops to prevent render loop bottlenecks
+  const counts = {};
+  for (let i = 0, len = state.tasks.length; i < len; i++) {
+    const cat = state.tasks[i].category;
+    counts[cat] = (counts[cat] || 0) + 1;
+  }
+  for (let i = 0, len = state.ovenBlocks.length; i < len; i++) {
+    const cat = state.ovenBlocks[i].category;
+    counts[cat] = (counts[cat] || 0) + 1;
+  }
+
+  for (let i = 0, len = CATEGORIES.length; i < len; i++) {
+    const c = CATEGORIES[i];
     const el = document.getElementById(`cat-count-${c.id}`);
-    if (el) el.textContent = count || '';
-  });
+    if (el) el.textContent = counts[c.id] || '';
+  }
 }
 
 function buildCategorySelects() {
