@@ -1,0 +1,14 @@
+💡 What:
+Replaced the `<div>` based day selectors with semantic `<button type="button">` elements. Added `role="group"` and `aria-labelledby` to the selector container to group the buttons. Reset the browser button styles using `appearance: none;`.
+
+🎯 Why:
+Custom UI selectors implemented with `<div>` elements are not focusable by default and do not respond to keyboard interactions like Space or Enter. Converting them to `<button>` elements provides this functionality natively. Grouping them helps screen reader users understand the context of the buttons.
+
+📸 Before/After:
+Before: The day selectors were styled `<div>` elements that could only be interacted with via mouse clicks.
+After: The day selectors are semantic `<button>` elements, visually identical, but natively accessible via keyboard navigation.
+
+♿ Accessibility:
+- Keyboard users can now tab into the day selector and use Space/Enter to activate days.
+- Screen readers will announce the group context correctly using `aria-labelledby` and `role="group"`.
+- The `aria-pressed` attribute accurately reflects the selected state dynamically.
