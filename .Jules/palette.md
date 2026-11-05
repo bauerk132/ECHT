@@ -5,3 +5,7 @@
 ## 2024-05-18 - Clickable Toggle Labels
 **Learning:** Custom UI toggle switches often implement their descriptive text alongside the actual input but fail to link them semantically. Using a standard `<label for="[id]">` wrapper around the text ensures it becomes clickable, expanding the hit area and significantly improving accessibility and UX without requiring Javascript event handlers.
 **Action:** Always wrap descriptive text for custom checkboxes or toggles in a `<label>` linked by `for` attribute to the input `id`.
+
+## 2024-11-05 - Semantic button groups with aria-pressed
+**Learning:** When building custom day selectors or similar interactive toggle groups out of `<div>` tags, users lose native keyboard accessibility and screen reader context. Converting these to `<button type="button">` combined with a parent `role="group"` and `aria-labelledby` ensures the entire control is comprehensible. Additionally, for single-select toggles within a group, dynamically updating the `aria-pressed` attribute (synchronously with the visual selected state) provides vital state feedback to assistive technologies.
+**Action:** When implementing or refactoring custom toggle groups, use semantic `<button>` elements, group them logically with ARIA roles, and ensure state changes explicitly update the `aria-pressed` or `aria-selected` attributes.
