@@ -2128,11 +2128,22 @@ function buildCategoryList() {
 }
 
 function updateCategoryCounts() {
+  const counts = {};
+
+  // ⚡ Bolt: Use O(N) single-pass loops to pre-aggregate frequencies instead of O(C*N) nested filters
+  for (let i = 0, len = state.tasks.length; i < len; i++) {
+    const cat = state.tasks[i].category;
+    counts[cat] = (counts[cat] || 0) + 1;
+  }
+
+  for (let i = 0, len = state.ovenBlocks.length; i < len; i++) {
+    const cat = state.ovenBlocks[i].category;
+    counts[cat] = (counts[cat] || 0) + 1;
+  }
+
   CATEGORIES.forEach(c => {
-    const count = state.tasks.filter(t => t.category === c.id).length
-                + state.ovenBlocks.filter(b => b.category === c.id).length;
     const el = document.getElementById(`cat-count-${c.id}`);
-    if (el) el.textContent = count || '';
+    if (el) el.textContent = counts[c.id] || '';
   });
 }
 
