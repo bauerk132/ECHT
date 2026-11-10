@@ -1,0 +1,4 @@
+💡 What: Converted non-semantic visual `<div class="form-label">` elements to standard `<label class="form-label" for="...">` tags. Also assigned proper `role="group"` and `aria-labelledby` attributes to custom day selector button groups.
+🎯 Why: Without standard labels, screen readers may fail to announce what an input is for. Clicking on standard visual labels also expands the click target to focus the input, improving usability for mouse and touch users.
+📸 Before/After: Visual presentation remains identical via CSS, but underlying HTML is deeply accessible.
+♿ Accessibility: Ensures that dynamic task forms and oven forms have fully navigable and descriptive form fields.
