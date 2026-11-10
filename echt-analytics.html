@@ -996,11 +996,20 @@ function computeAll() {
   const tasks = DATA.tasks;
   const oven = DATA.ovenBlocks;
 
-  // ── Basic totals
-  const totalTaskMin = tasks.reduce((s,t) => s + (t.endSlot - t.startSlot)*15, 0);
-  const activeMin = tasks.filter(t=>!t.passive).reduce((s,t) => s + (t.endSlot-t.startSlot)*15, 0);
-  const passiveMin = tasks.filter(t=>t.passive).reduce((s,t) => s + (t.endSlot-t.startSlot)*15, 0);
-  const ovenMin = oven.reduce((s,b) => s + (b.endSlot-b.startSlot)*15, 0);
+  // ── Basic totals (⚡ Bolt: Optimized O(N) array traversals)
+  let totalTaskMin = 0, activeMin = 0, passiveMin = 0;
+  for (let i = 0; i < tasks.length; i++) {
+    const t = tasks[i];
+    const dur = (t.endSlot - t.startSlot) * 15;
+    totalTaskMin += dur;
+    if (t.passive) passiveMin += dur;
+    else activeMin += dur;
+  }
+
+  let ovenMin = 0;
+  for (let i = 0; i < oven.length; i++) {
+    ovenMin += (oven[i].endSlot - oven[i].startSlot) * 15;
+  }
 
   // ── Oven utilization by slot (across all days)
   // ovenSlotCount[slot] = number of days that slot has oven running
