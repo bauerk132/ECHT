@@ -1,0 +1,13 @@
+💡 What:
+Replaced chained `.filter().reduce()` operations with single-pass O(N) `for` loops in the analytics rendering paths of both `index.html` (specifically `renderAnalytics()`) and `echt-analytics.html` (specifically `computeAll()`). Additionally, updated `generateInsights()` to accept pre-computed metrics (`totalMin`, `passiveMin`) as parameters rather than recalculating them internally.
+
+🎯 Why:
+In vanilla JS render loops, chained array methods create redundant array traversals and intermediate memory allocations. As the number of tasks and oven blocks grows, re-evaluating these multiple times per frame or per update becomes a measurable CPU and memory bottleneck, degrading UI responsiveness.
+
+📊 Impact:
+- Reduces time complexity of analytics computations from roughly O(4N) to O(N) (single pass).
+- Eliminates intermediate array allocations, reducing garbage collection pressure.
+- Avoids redundant O(N) recalculations within `generateInsights`.
+
+🔬 Measurement:
+A script (`test_metrics.js`) verified that the new single-pass logic outputs the exact same `totalTaskMin`, `activeMin`, `passiveMin`, and `ovenMin` results as the previous array chain implementation, ensuring no regressions.
